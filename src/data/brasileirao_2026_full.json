@@ -1,0 +1,628 @@
+[
+  {
+    "nome": "Athletico Paranaense",
+    "sigla": "CAP",
+    "fundacao": "26/03/1924",
+    "estadio": "Ligga Arena",
+    "capacidade_estadio": 42372,
+    "mascote": "Furacão",
+    "titulos_principais": [
+      "Copa Sul-Americana (2018, 2021)",
+      "Campeonato Brasileiro (2001)",
+      "Copa do Brasil (2019)"
+    ],
+    "historia": "O Athletico surgiu da fusão do International e do América-PR. É pioneiro em estrutura e gestão no Brasil, transformando-se em uma das maiores forças do futebol nacional nas últimas décadas.",
+    "elenco": [
+      {
+        "nome": "Mycael",
+        "posicao": "Goleiro",
+        "foto": "https://www.athletico.com.br/elenco/mycael"
+      },
+      {
+        "nome": "Kevin Viveros",
+        "posicao": "Atacante",
+        "foto": "https://www.athletico.com.br/elenco/viveros"
+      },
+      {
+        "nome": "Zapelli",
+        "posicao": "Meia",
+        "foto": "https://www.athletico.com.br/elenco/zapelli"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/athleticoparanaense/"
+  },
+  {
+    "nome": "Clube Atlético Mineiro",
+    "sigla": "CAM",
+    "fundacao": "25/03/1908",
+    "estadio": "Arena MRV",
+    "capacidade_estadio": 46000,
+    "mascote": "Galo",
+    "titulos_principais": [
+      "Libertadores (2013)",
+      "Campeonato Brasileiro (1937, 1971, 2021)",
+      "Copa do Brasil (2014, 2021)"
+    ],
+    "historia": "O Galo é um dos clubes mais tradicionais do Brasil. Fundado por estudantes em Belo Horizonte, possui uma torcida apaixonada e uma história de superação e grandes ídolos.",
+    "elenco": [
+      {
+        "nome": "Everson",
+        "posicao": "Goleiro",
+        "foto": "https://atletico.com.br/elenco/everson"
+      },
+      {
+        "nome": "Hulk",
+        "posicao": "Atacante",
+        "foto": "https://atletico.com.br/elenco/hulk"
+      },
+      {
+        "nome": "Deyverson",
+        "posicao": "Atacante",
+        "foto": "https://atletico.com.br/elenco/deyverson"
+      }
+    ],
+    "links_fotos_oficiais": "https://atletico.com.br/futebol/profissional/elenco"
+  },
+  {
+    "nome": "Esporte Clube Bahia",
+    "sigla": "ECB",
+    "fundacao": "01/01/1931",
+    "estadio": "Arena Fonte Nova",
+    "capacidade_estadio": 48000,
+    "mascote": "Super-Homem",
+    "titulos_principais": [
+      "Campeonato Brasileiro (1959, 1988)"
+    ],
+    "historia": "O Bahia foi o primeiro campeão brasileiro da história (Taça Brasil 1959). É a maior força do futebol nordestino e hoje faz parte do Grupo City.",
+    "elenco": [
+      {
+        "nome": "Marcos Felipe",
+        "posicao": "Goleiro",
+        "foto": "https://esporteclubebahia.com.br/elenco/marcos-felipe"
+      },
+      {
+        "nome": "Everton Ribeiro",
+        "posicao": "Meia",
+        "foto": "https://esporteclubebahia.com.br/elenco/everton-ribeiro"
+      },
+      {
+        "nome": "Lucho Rodríguez",
+        "posicao": "Atacante",
+        "foto": "https://esporteclubebahia.com.br/elenco/lucho-rodriguez"
+      }
+    ],
+    "links_fotos_oficiais": "https://esporteclubebahia.com.br/futebol/elenco"
+  },
+  {
+    "nome": "Botafogo de Futebol e Regatas",
+    "sigla": "BFR",
+    "fundacao": "12/08/1904",
+    "estadio": "Nilton Santos",
+    "capacidade_estadio": 44661,
+    "mascote": "Manequinho",
+    "titulos_principais": [
+      "Campeonato Brasileiro (1968, 1995)",
+      "Copa Conmebol (1993)"
+    ],
+    "historia": "O Glorioso é berço de lendas como Garrincha e Nilton Santos. Vive uma nova fase de protagonismo nacional sob a gestão de John Textor.",
+    "elenco": [
+      {
+        "nome": "John",
+        "posicao": "Goleiro",
+        "foto": "https://www.botafogo.com.br/elenco/john"
+      },
+      {
+        "nome": "Thiago Almada",
+        "posicao": "Meia",
+        "foto": "https://www.botafogo.com.br/elenco/almada"
+      },
+      {
+        "nome": "Igor Jesus",
+        "posicao": "Atacante",
+        "foto": "https://www.botafogo.com.br/elenco/igor-jesus"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/botafogooficial/"
+  },
+  {
+    "nome": "Red Bull Bragantino",
+    "sigla": "RBB",
+    "fundacao": "08/01/1928",
+    "estadio": "Nabi Abi Chedid",
+    "capacidade_estadio": 17128,
+    "mascote": "Massa Bruta",
+    "titulos_principais": [
+      "Campeonato Paulista (1990)",
+      "Série B (1989, 2019)"
+    ],
+    "historia": "O Bragantino tornou-se um modelo de clube-empresa no Brasil após a parceria com a Red Bull, focando em jovens talentos e futebol ofensivo.",
+    "elenco": [
+      {
+        "nome": "Cleiton",
+        "posicao": "Goleiro",
+        "foto": "https://www.redbullbragantino.com.br/elenco/cleiton"
+      },
+      {
+        "nome": "Lincoln",
+        "posicao": "Meia",
+        "foto": "https://www.redbullbragantino.com.br/elenco/lincoln"
+      },
+      {
+        "nome": "Eduardo Sasha",
+        "posicao": "Atacante",
+        "foto": "https://www.redbullbragantino.com.br/elenco/sasha"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.redbullbragantino.com.br/elenco"
+  },
+  {
+    "nome": "Associação Chapecoense de Futebol",
+    "sigla": "ACF",
+    "fundacao": "10/05/1973",
+    "estadio": "Arena Condá",
+    "capacidade_estadio": 20089,
+    "mascote": "Índio Condá",
+    "titulos_principais": [
+      "Copa Sul-Americana (2016)"
+    ],
+    "historia": "A Chapecoense é um símbolo de resiliência. Após a tragédia de 2016, o clube se reconstruiu e retornou à elite, mantendo sua forte ligação com a cidade de Chapecó.",
+    "elenco": [
+      {
+        "nome": "Léo Vieira",
+        "posicao": "Goleiro",
+        "foto": "https://chapecoense.com/elenco/leo-vieira"
+      },
+      {
+        "nome": "Bruno Leonardo",
+        "posicao": "Zagueiro",
+        "foto": "https://chapecoense.com/elenco/bruno-leonardo"
+      },
+      {
+        "nome": "Rômulo",
+        "posicao": "Atacante",
+        "foto": "https://chapecoense.com/elenco/romulo"
+      }
+    ],
+    "links_fotos_oficiais": "https://chapecoense.com/elenco/"
+  },
+  {
+    "nome": "Sport Club Corinthians Paulista",
+    "sigla": "SCCP",
+    "fundacao": "01/09/1910",
+    "estadio": "Neo Química Arena",
+    "capacidade_estadio": 49205,
+    "mascote": "Mosqueteiro",
+    "titulos_principais": [
+      "Mundial de Clubes (2000, 2012)",
+      "Libertadores (2012)",
+      "Campeonato Brasileiro (1990, 1998, 1999, 2005, 2011, 2015, 2017)"
+    ],
+    "historia": "Fundado por operários, o Corinthians é o 'Time do Povo'. Possui a segunda maior torcida do Brasil e uma história de lutas e conquistas épicas.",
+    "elenco": [
+      {
+        "nome": "Hugo Souza",
+        "posicao": "Goleiro",
+        "foto": "https://www.corinthians.com.br/elenco/hugo-souza"
+      },
+      {
+        "nome": "Rodrigo Garro",
+        "posicao": "Meia",
+        "foto": "https://www.corinthians.com.br/elenco/garro"
+      },
+      {
+        "nome": "Memphis Depay",
+        "posicao": "Atacante",
+        "foto": "https://www.corinthians.com.br/elenco/memphis"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.corinthians.com.br/futebol/profissional/elenco"
+  },
+  {
+    "nome": "Coritiba Foot Ball Club",
+    "sigla": "CFC",
+    "fundacao": "12/10/1909",
+    "estadio": "Couto Pereira",
+    "capacidade_estadio": 40502,
+    "mascote": "Vovô Coxa",
+    "titulos_principais": [
+      "Campeonato Brasileiro (1985)"
+    ],
+    "historia": "O Coxa é o clube mais antigo do Paraná. Foi o primeiro clube paranaense a conquistar o título brasileiro, em 1985, em pleno Maracanã.",
+    "elenco": [
+      {
+        "nome": "Pedro Morisco",
+        "posicao": "Goleiro",
+        "foto": "https://www.coritiba.com.br/elenco/pedro-morisco"
+      },
+      {
+        "nome": "Sebastián Gómez",
+        "posicao": "Meia",
+        "foto": "https://www.coritiba.com.br/elenco/sebastian-gomez"
+      },
+      {
+        "nome": "Pedro Rocha",
+        "posicao": "Atacante",
+        "foto": "https://www.coritiba.com.br/elenco/pedro-rocha"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.coritiba.com.br/elenco/168"
+  },
+  {
+    "nome": "Cruzeiro Esporte Clube",
+    "sigla": "CEC",
+    "fundacao": "02/01/1921",
+    "estadio": "Mineirão",
+    "capacidade_estadio": 61846,
+    "mascote": "Raposão",
+    "titulos_principais": [
+      "Libertadores (1976, 1997)",
+      "Campeonato Brasileiro (1966, 2003, 2013, 2014)",
+      "Copa do Brasil (1993, 1996, 2000, 2003, 2017, 2018)"
+    ],
+    "historia": "Fundado como Palestra Itália, o Cruzeiro é um dos clubes mais vitoriosos do país em competições nacionais e internacionais.",
+    "elenco": [
+      {
+        "nome": "Cássio",
+        "posicao": "Goleiro",
+        "foto": "https://www.cruzeiro.com.br/elenco/cassio"
+      },
+      {
+        "nome": "Matheus Pereira",
+        "posicao": "Meia",
+        "foto": "https://www.cruzeiro.com.br/elenco/matheus-pereira"
+      },
+      {
+        "nome": "Kaio Jorge",
+        "posicao": "Atacante",
+        "foto": "https://www.cruzeiro.com.br/elenco/kaio-jorge"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/cruzeirooficial/"
+  },
+  {
+    "nome": "Clube de Regatas do Flamengo",
+    "sigla": "CRF",
+    "fundacao": "17/11/1895",
+    "estadio": "Maracanã",
+    "capacidade_estadio": 78838,
+    "mascote": "Urubu",
+    "titulos_principais": [
+      "Mundial de Clubes (1981)",
+      "Libertadores (1981, 2019, 2022, 2025)",
+      "Campeonato Brasileiro (1980, 1982, 1983, 1987, 1992, 2009, 2019, 2020, 2025)"
+    ],
+    "historia": "O Flamengo é o clube de maior torcida do Brasil. Conquistou o Brasileirão e a Libertadores em 2025, reafirmando sua hegemonia no futebol sul-americano.",
+    "elenco": [
+      {
+        "nome": "Rossi",
+        "posicao": "Goleiro",
+        "foto": "https://www.flamengo.com.br/elenco/rossi"
+      },
+      {
+        "nome": "De La Cruz",
+        "posicao": "Meia",
+        "foto": "https://www.flamengo.com.br/elenco/de-la-cruz"
+      },
+      {
+        "nome": "Gerson",
+        "posicao": "Meia",
+        "foto": "https://www.flamengo.com.br/elenco/gerson"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flamengo.com.br/elencos/elenco-profissional"
+  },
+  {
+    "nome": "Fluminense Football Club",
+    "sigla": "FFC",
+    "fundacao": "21/07/1902",
+    "estadio": "Maracanã",
+    "capacidade_estadio": 78838,
+    "mascote": "Guerreirinho",
+    "titulos_principais": [
+      "Libertadores (2023)",
+      "Campeonato Brasileiro (1970, 1984, 2010, 2012)"
+    ],
+    "historia": "O Tricolor das Laranjeiras é um dos clubes mais aristocráticos do país e o berço da Seleção Brasileira.",
+    "elenco": [
+      {
+        "nome": "Fábio",
+        "posicao": "Goleiro",
+        "foto": "https://www.fluminense.com.br/elenco/fabio"
+      },
+      {
+        "nome": "Jhon Arias",
+        "posicao": "Meia",
+        "foto": "https://www.fluminense.com.br/elenco/arias"
+      },
+      {
+        "nome": "Kauã Elias",
+        "posicao": "Atacante",
+        "foto": "https://www.fluminense.com.br/elenco/kaua-elias"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.fluminense.com.br/futebol/elenco"
+  },
+  {
+    "nome": "Grêmio Foot-Ball Porto Alegrense",
+    "sigla": "GFBPA",
+    "fundacao": "15/09/1903",
+    "estadio": "Arena do Grêmio",
+    "capacidade_estadio": 55662,
+    "mascote": "Mosqueteiro",
+    "titulos_principais": [
+      "Mundial de Clubes (1983)",
+      "Libertadores (1983, 1995, 2017)",
+      "Campeonato Brasileiro (1981, 1996)"
+    ],
+    "historia": "O Imortal Tricolor é conhecido por sua raça e tradição em competições de mata-mata, sendo um dos clubes mais vitoriosos do Sul.",
+    "elenco": [
+      {
+        "nome": "Marchesín",
+        "posicao": "Goleiro",
+        "foto": "https://gremio.net/elenco/marchesin"
+      },
+      {
+        "nome": "Soteldo",
+        "posicao": "Atacante",
+        "foto": "https://gremio.net/elenco/soteldo"
+      },
+      {
+        "nome": "Braithwaite",
+        "posicao": "Atacante",
+        "foto": "https://gremio.net/elenco/braithwaite"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/gremiooficial/"
+  },
+  {
+    "nome": "Sport Club Internacional",
+    "sigla": "SCI",
+    "fundacao": "04/04/1909",
+    "estadio": "Beira-Rio",
+    "capacidade_estadio": 50842,
+    "mascote": "Saci",
+    "titulos_principais": [
+      "Mundial de Clubes (2006)",
+      "Libertadores (2006, 2010)",
+      "Campeonato Brasileiro (1975, 1976, 1979)"
+    ],
+    "historia": "O Colorado é o 'Clube do Povo' de Porto Alegre. Único campeão brasileiro invicto (1979) e campeão mundial sobre o Barcelona.",
+    "elenco": [
+      {
+        "nome": "Rochet",
+        "posicao": "Goleiro",
+        "foto": "https://internacional.com.br/elenco/rochet"
+      },
+      {
+        "nome": "Alan Patrick",
+        "posicao": "Meia",
+        "foto": "https://internacional.com.br/elenco/alan-patrick"
+      },
+      {
+        "nome": "Borré",
+        "posicao": "Atacante",
+        "foto": "https://internacional.com.br/elenco/borre"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/scinternacional/"
+  },
+  {
+    "nome": "Mirassol Futebol Clube",
+    "sigla": "MFC",
+    "fundacao": "09/11/1925",
+    "estadio": "José Maria de Campos Maia",
+    "capacidade_estadio": 15000,
+    "mascote": "Leão",
+    "titulos_principais": [
+      "Série C (2022)",
+      "Série D (2020)"
+    ],
+    "historia": "O Mirassol é a grande ascensão do interior paulista, consolidando-se na Série A após anos de excelente gestão e revelação de jogadores.",
+    "elenco": [
+      {
+        "nome": "Alex Muralha",
+        "posicao": "Goleiro",
+        "foto": "https://mirassolfc.com.br/elenco/muralha"
+      },
+      {
+        "nome": "Danielzinho",
+        "posicao": "Meia",
+        "foto": "https://mirassolfc.com.br/elenco/danielzinho"
+      },
+      {
+        "nome": "Dellatorre",
+        "posicao": "Atacante",
+        "foto": "https://mirassolfc.com.br/elenco/dellatorre"
+      }
+    ],
+    "links_fotos_oficiais": "https://mirassolfc.com.br/blogs/elenco"
+  },
+  {
+    "nome": "Sociedade Esportiva Palmeiras",
+    "sigla": "SEP",
+    "fundacao": "26/08/1914",
+    "estadio": "Allianz Parque",
+    "capacidade_estadio": 43713,
+    "mascote": "Periquito e Porco",
+    "titulos_principais": [
+      "Libertadores (1999, 2020, 2021)",
+      "Campeonato Brasileiro (12 títulos)"
+    ],
+    "historia": "O Verdão é o maior campeão nacional do Brasil. Possui uma das melhores estruturas do mundo e vive uma era de ouro de conquistas.",
+    "elenco": [
+      {
+        "nome": "Weverton",
+        "posicao": "Goleiro",
+        "foto": "https://www.palmeiras.com.br/elenco/weverton"
+      },
+      {
+        "nome": "Raphael Veiga",
+        "posicao": "Meia",
+        "foto": "https://www.palmeiras.com.br/elenco/veiga"
+      },
+      {
+        "nome": "Flaco López",
+        "posicao": "Atacante",
+        "foto": "https://www.palmeiras.com.br/elenco/flaco"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.palmeiras.com.br/elenco/"
+  },
+  {
+    "nome": "Clube do Remo",
+    "sigla": "REM",
+    "fundacao": "05/02/1905",
+    "estadio": "Baenão / Mangueirão",
+    "capacidade_estadio": 13792,
+    "mascote": "Leão Azul",
+    "titulos_principais": [
+      "Série C (2005)",
+      "Copa Verde (2021)"
+    ],
+    "historia": "O Remo retorna à Série A após 32 anos. Dono da maior torcida da Amazônia, o clube paraense busca consolidar o futebol nortista na elite nacional.",
+    "elenco": [
+      {
+        "nome": "Marcelo",
+        "posicao": "Goleiro",
+        "foto": "https://www.clubedoremo.com.br/elenco/marcelo"
+      },
+      {
+        "nome": "Klaus",
+        "posicao": "Zagueiro",
+        "foto": "https://www.clubedoremo.com.br/elenco/klaus"
+      },
+      {
+        "nome": "Pedro",
+        "posicao": "Lateral",
+        "foto": "https://www.clubedoremo.com.br/elenco/pedro"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.clubedoremo.com.br/futebol.php"
+  },
+  {
+    "nome": "Santos Futebol Clube",
+    "sigla": "SFC",
+    "fundacao": "14/04/1912",
+    "estadio": "Vila Belmiro",
+    "capacidade_estadio": 16062,
+    "mascote": "Baleia",
+    "titulos_principais": [
+      "Mundial de Clubes (1962, 1963)",
+      "Libertadores (1962, 1963, 2011)",
+      "Campeonato Brasileiro (8 títulos)"
+    ],
+    "historia": "O Peixe é o clube de Pelé e Neymar. Famoso mundialmente por sua base ofensiva e por ter parado guerras nos anos 60.",
+    "elenco": [
+      {
+        "nome": "Gabriel Brazão",
+        "posicao": "Goleiro",
+        "foto": "https://www.santosfc.com.br/elenco/brazao"
+      },
+      {
+        "nome": "Giuliano",
+        "posicao": "Meia",
+        "foto": "https://www.santosfc.com.br/elenco/giuliano"
+      },
+      {
+        "nome": "Wendel Silva",
+        "posicao": "Atacante",
+        "foto": "https://www.santosfc.com.br/elenco/wendel"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.flickr.com/photos/santosfc/"
+  },
+  {
+    "nome": "São Paulo Futebol Clube",
+    "sigla": "SPFC",
+    "fundacao": "25/01/1930",
+    "estadio": "Morumbis",
+    "capacidade_estadio": 66795,
+    "mascote": "Santo Paulo",
+    "titulos_principais": [
+      "Mundial de Clubes (1992, 1993, 2005)",
+      "Libertadores (1992, 1993, 2005)",
+      "Campeonato Brasileiro (6 títulos)"
+    ],
+    "historia": "O Tricolor Paulista é o único clube brasileiro com três títulos mundiais da FIFA. Sinônimo de organização e grandes vitórias internacionais.",
+    "elenco": [
+      {
+        "nome": "Rafael",
+        "posicao": "Goleiro",
+        "foto": "https://www.saopaulofc.net/elenco/rafael"
+      },
+      {
+        "nome": "Lucas Moura",
+        "posicao": "Atacante",
+        "foto": "https://www.saopaulofc.net/elenco/lucas"
+      },
+      {
+        "nome": "Calleri",
+        "posicao": "Atacante",
+        "foto": "https://www.saopaulofc.net/elenco/calleri"
+      }
+    ],
+    "links_fotos_oficiais": "https://www.saopaulofc.net/elenco/"
+  },
+  {
+    "nome": "Club de Regatas Vasco da Gama",
+    "sigla": "CRVG",
+    "fundacao": "21/08/1898",
+    "estadio": "São Januário",
+    "capacidade_estadio": 21880,
+    "mascote": "Almirante",
+    "titulos_principais": [
+      "Libertadores (1998)",
+      "Campeonato Brasileiro (1974, 1979, 1989, 1997, 2000)"
+    ],
+    "historia": "O Vasco é o clube da 'Resposta Histórica', símbolo da luta contra o racismo no futebol brasileiro.",
+    "elenco": [
+      {
+        "nome": "Léo Jardim",
+        "posicao": "Goleiro",
+        "foto": "https://vasco.com.br/elenco/leo-jardim"
+      },
+      {
+        "nome": "Coutinho",
+        "posicao": "Meia",
+        "foto": "https://vasco.com.br/elenco/coutinho"
+      },
+      {
+        "nome": "Vegetti",
+        "posicao": "Atacante",
+        "foto": "https://vasco.com.br/elenco/vegetti"
+      }
+    ],
+    "links_fotos_oficiais": "https://vasco.com.br/futebol/elenco"
+  },
+  {
+    "nome": "Esporte Clube Vitória",
+    "sigla": "ECV",
+    "fundacao": "13/05/1899",
+    "estadio": "Barradão",
+    "capacidade_estadio": 30618,
+    "mascote": "Leão",
+    "titulos_principais": [
+      "Série B (2023)",
+      "Copa do Nordeste (4 títulos)"
+    ],
+    "historia": "O Rubro-Negro baiano é famoso por sua base reveladora e sua força jogando no Barradão, sendo um dos clubes mais antigos do país.",
+    "elenco": [
+      {
+        "nome": "Lucas Arcanjo",
+        "posicao": "Goleiro",
+        "foto": "https://ecvitoria.com.br/elenco/lucas-arcanjo"
+      },
+      {
+        "nome": "Matheusinho",
+        "posicao": "Meia",
+        "foto": "https://ecvitoria.com.br/elenco/matheusinho"
+      },
+      {
+        "nome": "Alerrandro",
+        "posicao": "Atacante",
+        "foto": "https://ecvitoria.com.br/elenco/alerrandro"
+      }
+    ],
+    "links_fotos_oficiais": "https://ecvitoria.com.br/elenco"
+  }
+]

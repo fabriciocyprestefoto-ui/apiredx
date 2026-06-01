@@ -1,0 +1,2361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>REDX API ESPORTE</title>
+  <script>
+    // Redireciona para versão mobile em telas pequenas
+    if (window.innerWidth <= 768 && !window.location.search.includes('desktop')) {
+      window.location.replace('/mobile.html');
+    }
+  </script>
+  <meta name="description" content="Painel navegável da REDX API ESPORTE — Futebol, NBA, UFC, tabelas e transmissões em tempo real." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      /* Purple visionOS palette */
+      --bg-from: #0d0120;
+      --bg-mid: #1a0538;
+      --bg-to: #0a0118;
+      --purple: #a855f7;
+      --purple-light: #c084fc;
+      --purple-deep: #7c3aed;
+      --purple-glow: rgba(168, 85, 247, 0.35);
+      --violet: #8b5cf6;
+      --pink: #ec4899;
+      --cyan: #22d3ee;
+      --gold: #fbbf24;
+      --green: #34d399;
+      --red: #f43f5e;
+      --orange: #fb923c;
+      --text: #f1f0ff;
+      --muted: #a78bca;
+      --soft: #7c6899;
+      /* Glass effect */
+      --glass: rgba(255, 255, 255, 0.055);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-hover: rgba(255, 255, 255, 0.09);
+      --glass-strong: rgba(168, 85, 247, 0.15);
+      --glass-blur: blur(24px);
+      --glass-blur-strong: blur(40px);
+      --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255,255,255,0.12);
+      --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.18);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --radius-xl: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(139, 92, 246, 0.4), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 80% 10%, rgba(168, 85, 247, 0.25), transparent 50%),
+        radial-gradient(ellipse 50% 70% at 50% 100%, rgba(76, 29, 149, 0.3), transparent 60%),
+        radial-gradient(ellipse 40% 40% at 10% 60%, rgba(236, 72, 153, 0.12), transparent 45%),
+        linear-gradient(160deg, #0d0120 0%, #1a0538 40%, #0e022a 70%, #0a0118 100%);
+      color: var(--text);
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Animated orbs */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
+      animation: orbFloat 12s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -150px;
+      right: -150px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.14) 0%, transparent 70%);
+      animation: orbFloat 15s ease-in-out infinite reverse;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(40px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.97); }
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    /* ═══════════════════════ TOPBAR ═══════════════════════ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-height: 72px;
+      padding: 12px 32px;
+      background: rgba(13, 1, 32, 0.7);
+      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur-strong);
+      -webkit-backdrop-filter: var(--glass-blur-strong);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 220px;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.5));
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .brand:hover .brand-logo {
+      filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.4));
+      transform: scale(1.03);
+    }
+
+    /* ═══════════════════════ NAV ═══════════════════════ */
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      margin-right: 6px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--soft);
+      padding: 0 8px;
+      font-weight: 700;
+    }
+
+    .nav button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 36px;
+      padding: 0 14px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav button:hover {
+      color: var(--text);
+      background: var(--glass);
+      border-color: var(--glass-border);
+    }
+
+    .nav button.active {
+      color: white;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(168, 85, 247, 0.25));
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .nav-icon { font-size: 15px; }
+
+    /* Sport-specific active colors */
+    .nav button.active[data-sport="nba"] {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(251, 146, 60, 0.2));
+      border-color: rgba(251, 146, 60, 0.4);
+      box-shadow: 0 0 16px rgba(251, 146, 60, 0.2);
+    }
+    .nav button.active[data-sport="ufc"] {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.4), rgba(251, 113, 133, 0.2));
+      border-color: rgba(244, 63, 94, 0.4);
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.2);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 13px;
+      padding: 6px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(52, 211, 153, 0.8); }
+      50% { box-shadow: 0 0 18px rgba(52, 211, 153, 1), 0 0 30px rgba(52, 211, 153, 0.4); }
+    }
+
+    /* ═══════════════════════ MAIN ═══════════════════════ */
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(1680px, calc(100vw - 48px));
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+
+    /* ═══════════════════════ HERO ═══════════════════════ */
+    .hero {
+      display: grid;
+      place-items: center;
+      gap: 20px;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--glass-strong);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--purple-light);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: clamp(40px, 5.5vw, 80px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      background: linear-gradient(135deg, #ffffff 0%, #e2d9ff 40%, var(--purple-light) 70%, var(--pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-logo {
+      height: clamp(80px, 12vw, 180px);
+      width: auto;
+      max-width: 700px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 30px rgba(168, 85, 247, 0.55))
+        drop-shadow(0 0 60px rgba(236, 72, 153, 0.25));
+      animation: heroGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes heroGlow {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 30px rgba(168, 85, 247, 0.55))
+          drop-shadow(0 0 60px rgba(236, 72, 153, 0.25));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 50px rgba(168, 85, 247, 0.85))
+          drop-shadow(0 0 100px rgba(236, 72, 153, 0.45));
+      }
+    }
+
+    .subtitle {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .base-url {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px 12px 22px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-glass);
+    }
+
+    .base-url code {
+      color: var(--purple-light);
+      font-size: 14px;
+      font-family: 'SF Mono', 'Cascadia Code', monospace;
+    }
+
+    .btn-copy {
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--purple-deep), var(--violet));
+      color: white;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+    .btn-copy:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(124, 58, 237, 0.5); }
+
+    /* ═══════════════════════ METRICS ═══════════════════════ */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 0 0 48px;
+    }
+
+    .metric {
+      padding: 24px 22px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: var(--shadow-glass);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    }
+
+    .metric:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+
+    .metric-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .value {
+      margin-top: 8px;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ═══════════════════════ SPORT TABS / VIEWS ═══════════════════════ */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ═══════════════════════ SECTION HEAD ═══════════════════════ */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 20px;
+    }
+
+    .section-head h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-head h2.nba-title {
+      background: linear-gradient(135deg, #fff, var(--orange));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .section-head h2.ufc-title {
+      background: linear-gradient(135deg, #fff, var(--red));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .nba-conf-btn {
+      cursor: pointer;
+      border: none;
+      background: var(--glass);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      transition: all .2s;
+    }
+    .nba-conf-btn.active {
+      background: rgba(251, 146, 60, .15);
+      color: #fb923c;
+      border-color: rgba(251, 146, 60, .4);
+    }
+    .nba-conf-btn:hover:not(.active) { color: var(--text); }
+
+    .section-sep { margin: 40px 0 28px; }
+
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .control {
+      min-height: 38px;
+      padding: 0 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text);
+      outline: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .control:focus { border-color: rgba(168, 85, 247, 0.5); box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15); }
+    .control::placeholder { color: var(--soft); }
+
+    /* ═══════════════════════ GRIDS ═══════════════════════ */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .grid.teams { grid-template-columns: repeat(5, 1fr); }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .grid.three { grid-template-columns: repeat(3, 1fr); }
+
+    /* ═══════════════════════ GLASS CARD BASE ═══════════════════════ */
+    .glass-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: var(--shadow-glass);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      pointer-events: none;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(168, 85, 247, 0.3);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* ═══════════════════════ MATCH CARD ═══════════════════════ */
+    .item-card {
+      padding: 20px;
+    }
+
+    .match {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    .match-team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .match-team:last-child { justify-content: flex-end; }
+
+    .versus {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--glass-strong);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: var(--purple-light);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .comp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .broadcasts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 3px 10px;
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--glass);
+      font-size: 12px;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+    }
+
+    .pill img { width: 16px; height: 16px; object-fit: contain; }
+
+    /* ═══════════════════════ LOGOS ═══════════════════════ */
+    .mini-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .logo-box {
+      display: grid;
+      place-items: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-box img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+
+    .logo-box-lg {
+      width: 90px;
+      height: 90px;
+      border-radius: 20px;
+    }
+
+    /* ═══════════════════════ TEAM CARD ═══════════════════════ */
+    .team-card {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 14px;
+      align-items: center;
+      cursor: pointer;
+      padding: 18px;
+    }
+
+    .team-card:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(168, 85, 247, 0.08);
+    }
+
+    .team-name {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .team-info {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* ═══════════════════════ TABLE ═══════════════════════ */
+    .panel {
+      padding: 24px;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 6px;
+    }
+
+    .table th {
+      color: var(--soft);
+      font-size: 11px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0 14px 10px;
+      font-weight: 700;
+    }
+
+    .table td {
+      padding: 13px 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 13.5px;
+      transition: background 0.2s;
+    }
+
+    .table tr:hover td { background: rgba(168, 85, 247, 0.08); }
+
+    .table td:first-child {
+      border-left: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px 0 0 10px;
+    }
+
+    .table td:last-child {
+      border-right: 1px solid rgba(255,255,255,0.05);
+      border-radius: 0 10px 10px 0;
+    }
+
+    .inline-team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .pos-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .pos-1 { background: rgba(251, 191, 36, 0.2); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .pos-2 { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
+    .pos-3 { background: rgba(251, 146, 60, 0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.2); }
+    .pos-top { background: rgba(52, 211, 153, 0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+    .pos-rel { background: rgba(244, 63, 94, 0.12); color: var(--red); border: 1px solid rgba(244,63,94,0.2); }
+    .pos-norm { background: rgba(255,255,255,0.07); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
+
+    /* ═══════════════════════ SPORT HERO BANNERS ═══════════════════════ */
+    .sport-banner {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 28px 32px;
+      border-radius: var(--radius-xl);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .sport-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      opacity: 0.5;
+    }
+
+    .sport-banner.nba-banner {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(251, 146, 60, 0.1), rgba(0,0,0,0));
+      border-color: rgba(251, 146, 60, 0.25);
+    }
+
+    .sport-banner.ufc-banner {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(251, 113, 133, 0.1), rgba(0,0,0,0));
+      border-color: rgba(244, 63, 94, 0.25);
+    }
+
+    .sport-banner.football-banner {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.1), rgba(0,0,0,0));
+      border-color: rgba(168, 85, 247, 0.25);
+    }
+
+    .banner-emoji {
+      font-size: 56px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .banner-content { position: relative; }
+
+    .banner-title {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .banner-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .banner-stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    .banner-stat { text-align: center; }
+    .banner-stat .val { font-size: 22px; font-weight: 800; }
+    .banner-stat .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ═══════════════════════ UFC CARDS ═══════════════════════ */
+    .ufc-card {
+      padding: 22px;
+    }
+
+    .ufc-event-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .ufc-date {
+      font-size: 12px;
+      color: var(--red);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .ufc-fighters {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .ufc-fighter {
+      text-align: center;
+      flex: 1;
+    }
+
+    .ufc-fighter-name {
+      font-weight: 800;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .ufc-fighter-record {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .ufc-vs {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(244, 63, 94, 0.5);
+    }
+
+    .ufc-belt {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    /* ═══════════════════════ NBA CARDS ═══════════════════════ */
+    .nba-match-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .nba-team-score {
+      text-align: center;
+      flex: 1;
+    }
+
+    .nba-team-abbr {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .nba-score-num {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff, var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nba-separator {
+      font-size: 28px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .nba-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .nba-status.live {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--red);
+    }
+
+    .nba-status.finished {
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      color: var(--green);
+    }
+
+    .nba-status.upcoming {
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      color: var(--purple-light);
+    }
+
+    /* ═══════════════════════ TEAM PAGE ═══════════════════════ */
+    #view-time-detalhe .team-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 32px;
+      align-items: center;
+      padding: 36px;
+      margin-bottom: 32px;
+    }
+
+    .team-hero-logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--glass-border);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .team-hero-logo img {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+    }
+
+    .team-hero-name {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .team-hero-meta {
+      display: flex;
+      gap: 14px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .team-meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: rgba(168, 85, 247, 0.4);
+      background: var(--glass-strong);
+    }
+
+    .team-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .team-stat-card {
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .team-stat-val {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .team-stat-lbl {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════ SQUAD / PLAYERS ═══════════════════════ */
+    .squad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .player {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      transition: all 0.2s;
+    }
+
+    .player:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      background: rgba(168, 85, 247, 0.06);
+    }
+
+    .player-name {
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .player-pos {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ═══════════════════════ NEWS CARDS ═══════════════════════ */
+    .news-card {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 18px;
+    }
+
+    .news-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 10px;
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+    }
+
+    .news-source {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple-light);
+    }
+
+    .news-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 6px 0 4px;
+      line-height: 1.4;
+    }
+
+    .news-summary {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════ DOCS ═══════════════════════ */
+    .endpoint {
+      display: grid;
+      gap: 6px;
+      padding: 16px 20px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .endpoint:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(168, 85, 247, 0.07);
+    }
+
+    .endpoint strong {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .endpoint code {
+      color: var(--purple-light);
+      font-size: 12px;
+      font-family: 'SF Mono', 'Cascadia Code', monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .endpoint-tag {
+      display: inline-flex;
+      padding: 2px 8px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+    }
+
+    /* ═══════════════════════ LOADING / EMPTY ═══════════════════════ */
+    .loading, .empty {
+      display: grid;
+      place-items: center;
+      min-height: 160px;
+      color: var(--muted);
+      text-align: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .loading::before {
+      content: '';
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(168, 85, 247, 0.2);
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ═══════════════════════ DRAWER (Team detail) ═══════════════════════ */
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+    }
+
+    .drawer.open { display: block; }
+
+    .drawer-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: min(780px, 100vw);
+      height: 100%;
+      overflow: auto;
+      padding: 28px;
+      background: rgba(15, 3, 40, 0.92);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: -40px 0 100px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(30px);
+    }
+
+    .close-btn {
+      float: right;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .close-btn:hover { background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.3); color: var(--red); }
+
+    /* ═══════════════════════ HOME SPORT TABS ═══════════════════════ */
+    .sport-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+      backdrop-filter: blur(20px);
+    }
+
+    .sport-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s;
+      justify-content: center;
+    }
+
+    .sport-tab:hover {
+      color: var(--text);
+      background: var(--glass);
+    }
+
+    .sport-tab.active {
+      color: white;
+      border-color: rgba(168, 85, 247, 0.4);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.15));
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
+    @media (max-width: 1200px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .grid.teams { grid-template-columns: repeat(3, 1fr); }
+      .squad { grid-template-columns: repeat(2, 1fr); }
+      .team-stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      main { width: calc(100vw - 32px); padding-top: 28px; }
+      .topbar { padding: 10px 16px; flex-wrap: wrap; }
+      .brand { display: flex; align-items: center; }
+      .brand-logo { height: 32px; }
+      .nav { order: 3; width: 100%; }
+      .metrics, .grid, .grid.teams, .grid.two, .grid.three, .squad, .team-stats-grid { grid-template-columns: 1fr; }
+      h1 { letter-spacing: -1px; }
+      .sport-banner { flex-direction: column; text-align: center; padding: 20px; }
+      .banner-stats { justify-content: center; }
+      #view-time-detalhe .team-hero { grid-template-columns: 1fr; text-align: center; place-items: center; }
+      .news-card { grid-template-columns: 1fr; }
+      .table { min-width: 640px; }
+    }
+
+    @media (max-width: 480px) {
+      .match { grid-template-columns: 1fr; }
+      .match-team, .match-team:last-child { justify-content: center; }
+      .hero-logo { width: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ TOPBAR ═══════════════ -->
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="REDX API ESPORTE">
+      <img src="/img/redx-logo.png" alt="REDX API Esporte" class="brand-logo" />
+    </a>
+
+    <nav class="nav" aria-label="Navegação principal">
+
+      <div class="nav-group">
+        <span class="nav-label">⚽</span>
+        <button class="active" data-view="home"><span class="nav-icon">🏠</span>Início</button>
+        <button data-view="agenda"><span class="nav-icon">📅</span>Agenda</button>
+        <button data-view="brasileirao"><span class="nav-icon">🏆</span>Brasileirão</button>
+        <button data-view="times"><span class="nav-icon">🎽</span>Times</button>
+        <button data-view="artilharia"><span class="nav-icon">👟</span>Artilharia</button>
+        <button data-view="transmissoes"><span class="nav-icon">📺</span>Transmissões</button>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">🏀</span>
+        <button data-view="nba" data-sport="nba"><span class="nav-icon">🏀</span>NBA</button>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">🥊</span>
+        <button data-view="ufc" data-sport="ufc"><span class="nav-icon">🥊</span>UFC/MMA</button>
+      </div>
+
+      <div class="nav-group">
+        <button data-view="noticias"><span class="nav-icon">📰</span>Notícias</button>
+        <button data-view="docs"><span class="nav-icon">📖</span>Docs</button>
+      </div>
+    </nav>
+
+    <div class="status" role="status" aria-live="polite">
+      <span class="dot" id="statusDot"></span>
+      <span id="onlineText">Online</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge">⚡ API ao vivo — Futebol · NBA · UFC</div>
+      <img
+        src="/img/redx-logo.png"
+        alt="REDX API Esporte"
+        class="hero-logo"
+        onerror="this.style.display='none'; document.getElementById('heroFallbackTitle').style.display='block'"
+      />
+      <h1 id="heroFallbackTitle" style="display:none">REDX API<br>ESPORTE</h1>
+      <p class="subtitle">Jogos do dia, transmissões, tabelas, artilharia, elencos, NBA e UFC — tudo numa API navegável em tempo real.</p>
+      <div class="base-url">
+        <code id="baseUrl"></code>
+        <button class="btn-copy" id="copyBase">Copiar URL</button>
+      </div>
+    </section>
+
+    <!-- METRICS -->
+    <section class="metrics" aria-label="Resumo da API">
+      <article class="metric glass-card">
+        <span class="metric-icon">🎽</span>
+        <div class="label">Times</div>
+        <div class="value" id="metricTeams">--</div>
+      </article>
+      <article class="metric glass-card">
+        <span class="metric-icon">🏆</span>
+        <div class="label">Campeonatos</div>
+        <div class="value" id="metricComps">--</div>
+      </article>
+      <article class="metric glass-card">
+        <span class="metric-icon">⚽</span>
+        <div class="label">Jogos Hoje</div>
+        <div class="value" id="metricToday">--</div>
+      </article>
+      <article class="metric glass-card">
+        <span class="metric-icon">👟</span>
+        <div class="label">Artilheiros</div>
+        <div class="value" id="metricScorers">--</div>
+      </article>
+    </section>
+
+    <!-- ═══ VIEW: HOME ═══ -->
+    <section class="view active" id="view-home">
+      <div class="section-head">
+        <h2>Jogos de Hoje</h2>
+        <span class="pill" id="todayDate"></span>
+      </div>
+      <div class="grid two" id="todayMatches"><div class="loading"></div></div>
+
+      <div class="section-head section-sep">
+        <h2>Próximos Jogos</h2>
+        <span class="pill">14 dias</span>
+      </div>
+      <div class="grid two" id="upcomingHome"></div>
+
+      <div class="section-head section-sep">
+        <h2>Últimos Resultados</h2>
+        <span class="pill">Placares finais</span>
+      </div>
+      <div class="grid two" id="recentHome"></div>
+    </section>
+
+    <!-- ═══ VIEW: AGENDA ═══ -->
+    <section class="view" id="view-agenda">
+      <div class="section-head">
+        <h2>Agenda Completa</h2>
+        <div class="controls">
+          <input class="control" id="agendaSearch" placeholder="🔍 Filtrar por time ou campeonato" />
+        </div>
+      </div>
+      <div class="grid two" id="agendaList"></div>
+    </section>
+
+    <!-- ═══ VIEW: BRASILEIRÃO ═══ -->
+    <section class="view" id="view-brasileirao">
+      <div class="sport-banner football-banner glass-card">
+        <div class="banner-emoji">🏆</div>
+        <div class="banner-content">
+          <div class="banner-title">Brasileirão Série A 2026</div>
+          <div class="banner-sub">Tabela de classificação atualizada</div>
+        </div>
+      </div>
+      <div class="section-head">
+        <h2>Tabela de Classificação</h2>
+        <span class="pill">Série A</span>
+      </div>
+      <div class="glass-card panel table-wrap">
+        <table class="table" id="standingsTable"></table>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: TIMES ═══ -->
+    <section class="view" id="view-times">
+      <div class="section-head">
+        <h2>Times do Brasileirão</h2>
+        <div class="controls">
+          <input class="control" id="teamSearch" placeholder="🔍 Buscar time" />
+        </div>
+      </div>
+      <div class="grid teams" id="teamsGrid"></div>
+    </section>
+
+    <!-- ═══ VIEW: TIME DETALHE (Team Page) ═══ -->
+    <section class="view" id="view-time-detalhe">
+      <button class="back-btn" id="backToTimes">← Voltar para Times</button>
+      <div id="teamPageContent"><div class="loading"></div></div>
+    </section>
+
+    <!-- ═══ VIEW: ARTILHARIA ═══ -->
+    <section class="view" id="view-artilharia">
+      <div class="section-head">
+        <h2>Artilharia</h2>
+        <span class="pill">Fotos sempre preenchidas</span>
+      </div>
+      <div class="glass-card panel table-wrap">
+        <table class="table" id="scorersTable"></table>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: TRANSMISSÕES ═══ -->
+    <section class="view" id="view-transmissoes">
+      <div class="sport-banner glass-card" style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1))">
+        <div class="banner-emoji">📺</div>
+        <div class="banner-content">
+          <div class="banner-title" style="background:linear-gradient(135deg,#fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Canais & Streaming</div>
+          <div class="banner-sub">Clique em um canal para assistir ao vivo — 37 emissoras cadastradas</div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:32px">
+        <h2>Onde Assistir</h2>
+        <span class="pill">Logo + link direto ao canal</span>
+      </div>
+      <div id="broadcastList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px"><div class="loading"></div></div>
+    </section>
+
+    <!-- ═══ VIEW: NBA ═══ -->
+    <section class="view" id="view-nba">
+      <div class="sport-banner nba-banner glass-card">
+        <div class="banner-emoji">🏀</div>
+        <div class="banner-content">
+          <div class="banner-title" style="background:linear-gradient(135deg,#fff,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">NBA Basketball</div>
+          <div class="banner-sub">National Basketball Association — Temporada ao vivo</div>
+        </div>
+      </div>
+
+      <!-- Últimos Resultados NBA -->
+      <div class="section-head">
+        <h2 class="nba-title">Últimos Resultados</h2>
+        <span class="pill" id="nbaTodayDate"></span>
+      </div>
+      <div class="grid two" id="nbaTodayGames"><div class="loading"></div></div>
+
+      <!-- Próximos Jogos -->
+      <div class="section-head section-sep">
+        <h2 class="nba-title">Próximos Jogos</h2>
+        <span class="pill">📺 Com transmissão</span>
+      </div>
+      <div class="grid two" id="nbaUpcoming"></div>
+
+      <!-- Tabela com tabs Leste/Oeste -->
+      <div class="section-head section-sep">
+        <h2 class="nba-title">Tabela NBA</h2>
+        <div style="display:flex;gap:8px">
+          <button class="pill nba-conf-btn active" id="btnLesteNBA" onclick="showConf('east')">🔵 Leste</button>
+          <button class="pill nba-conf-btn" id="btnOesteNBA" onclick="showConf('west')">🔴 Oeste</button>
+        </div>
+      </div>
+      <div class="glass-card panel table-wrap">
+        <table class="table" id="nbaStandingsTable"></table>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: UFC/MMA ═══ -->
+    <section class="view" id="view-ufc">
+      <div class="sport-banner ufc-banner glass-card">
+        <div class="banner-emoji">🥊</div>
+        <div class="banner-content">
+          <div class="banner-title" style="background:linear-gradient(135deg,#fff,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">UFC / MMA</div>
+          <div class="banner-sub">Ultimate Fighting Championship — Próximos eventos & lutadores</div>
+        </div>
+      </div>
+
+      <!-- Próximo Evento Destaque -->
+      <div class="section-head">
+        <h2 class="ufc-title">Próximo Evento</h2>
+        <span class="pill">🔴 Destaque</span>
+      </div>
+      <div id="ufcNextEvent"><div class="loading"></div></div>
+
+      <!-- Card completo com todos os fights -->
+      <div class="section-head section-sep">
+        <h2 class="ufc-title">Card do Evento</h2>
+        <span class="pill">Todas as lutas</span>
+      </div>
+      <div id="ufcFightCard"><div class="empty">Carregando card...</div></div>
+
+      <!-- Calendário -->
+      <div class="section-head section-sep">
+        <h2 class="ufc-title">Calendário UFC</h2>
+        <span class="pill">Próximos eventos</span>
+      </div>
+      <div class="grid three" id="ufcCalendar"></div>
+    </section>
+
+    <!-- ═══ VIEW: NOTÍCIAS ═══ -->
+    <section class="view" id="view-noticias">
+      <div class="section-head">
+        <h2>Notícias</h2>
+        <span class="pill">MSN · Terra · UOL · Lance</span>
+      </div>
+      <div class="grid two" id="newsList"></div>
+    </section>
+
+    <!-- ═══ VIEW: DOCS ═══ -->
+    <section class="view" id="view-docs">
+      <div class="section-head">
+        <h2>Endpoints da API</h2>
+        <span class="pill">Clique para abrir JSON</span>
+      </div>
+
+      <div class="section-head" style="margin-top:28px">
+        <h2 style="font-size:18px">⚽ Futebol</h2>
+      </div>
+      <div class="grid two" id="docsFootball"></div>
+
+      <div class="section-head section-sep">
+        <h2 style="font-size:18px">🏀 NBA</h2>
+      </div>
+      <div class="grid two" id="docsNba"></div>
+
+      <div class="section-head section-sep">
+        <h2 style="font-size:18px">🥊 UFC/MMA</h2>
+      </div>
+      <div class="grid two" id="docsUfc"></div>
+
+      <div class="section-head section-sep">
+        <h2 style="font-size:18px">📺 Transmissões & Canais</h2>
+      </div>
+      <div class="grid two" id="docsTv"></div>
+    </section>
+
+
+  </main>
+
+  <!-- ═══════════════ DRAWER (team sidebar) ═══════════════ -->
+  <aside class="drawer" id="teamDrawer" aria-hidden="true">
+    <div class="drawer-panel">
+      <button class="close-btn" id="closeDrawer" aria-label="Fechar">✕</button>
+      <div id="teamDetails"></div>
+    </div>
+  </aside>
+
+  <script>
+    const base = window.location.origin;
+    const state = {
+      full: null, teams: [], agenda: [],
+      standings: [], scorers: [], broadcasts: [], news: [],
+      nbaToday: [], nbaUpcoming: [], nbaStandings: [],
+      ufcNext: null, ufcCalendar: [],
+    };
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+    const api = (path) => fetch(path).then((r) => {
+      if (!r.ok) throw new Error(path + ' → ' + r.status);
+      return r.json();
+    });
+
+    function text(v, fb = '-') {
+      return v == null || v === '' ? fb : String(v);
+    }
+
+    function formatarData(str) {
+      if (!str) return '-';
+      try {
+        const d = new Date(str + (str.includes('T') ? '' : 'T12:00:00'));
+        return d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+      } catch { return str; }
+    }
+
+    function logo(url, alt, cls = 'mini-logo') {
+      if (!url) return `<span class="${cls}" style="display:inline-block;background:rgba(255,255,255,.07);border-radius:50%"></span>`;
+      return `<img class="${cls}" src="${url}" alt="${text(alt)}" loading="lazy" decoding="async" />`;
+    }
+
+    function broadcasts(items) {
+      const list = Array.isArray(items) && items.length
+        ? items
+        : [{ canal: 'A confirmar', tipo: 'desconhecido', logo: null }];
+      return '<div class="broadcasts">' + list.map((b) =>
+        `<span class="pill">${b.logo ? `<img src="${b.logo}" alt="" loading="lazy" />` : ''}${text(b.canal)}</span>`
+      ).join('') + '</div>';
+    }
+
+    function scoreOrVersus(match) {
+      if (match.score && (match.score.home != null || match.score.away != null)) {
+        return `<div class="score">${text(match.score.home, '0')} — ${text(match.score.away, '0')}</div>`;
+      }
+      return '<div class="versus">×</div>';
+    }
+
+    function matchCard(match) {
+      return `<article class="glass-card item-card">
+        <div class="comp-badge">${text(match.competition)} &nbsp;·&nbsp; ${text(match.date)} ${text(match.time)}</div>
+        <div class="match">
+          <div class="match-team">${logo(match.homeTeam?.logo, match.homeTeam?.name)}<strong>${text(match.homeTeam?.name)}</strong></div>
+          ${scoreOrVersus(match)}
+          <div class="match-team"><strong>${text(match.awayTeam?.name)}</strong>${logo(match.awayTeam?.logo, match.awayTeam?.name)}</div>
+        </div>
+        ${broadcasts(match.transmissoes || match.broadcasts)}
+      </article>`;
+    }
+
+    /* ═══ METRICS ═══ */
+    function renderMetrics() {
+      $('#metricTeams').textContent = state.full?.times?.length ?? state.teams.length ?? 0;
+      $('#metricComps').textContent = '9';
+      $('#metricToday').textContent = state.full?.jogosDoDia?.length ?? 0;
+      $('#metricScorers').textContent = state.full?.artilharia?.length ?? 0;
+      const d = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+      $('#todayDate').textContent = d;
+      $('#nbaTodayDate').textContent = d;
+    }
+
+    /* ═══ HOME ═══ */
+    function renderHome() {
+      const today = state.full?.jogosDoDia ?? [];
+      $('#todayMatches').innerHTML = today.length
+        ? today.map(matchCard).join('')
+        : '<div class="empty">😴 Sem jogos de times brasileiros hoje</div>';
+      $('#upcomingHome').innerHTML = (state.full?.proximosJogos ?? []).slice(0, 6).map(matchCard).join('')
+        || '<div class="empty">Nenhum próximo jogo encontrado</div>';
+      $('#recentHome').innerHTML = (state.full?.ultimosResultados ?? []).slice(0, 6).map(matchCard).join('')
+        || '<div class="empty">Nenhum resultado recente encontrado</div>';
+    }
+
+    /* ═══ AGENDA ═══ */
+    function renderAgenda(filter = '') {
+      const q = filter.trim().toLowerCase();
+      const items = state.agenda.filter((m) => !q || JSON.stringify(m).toLowerCase().includes(q));
+      $('#agendaList').innerHTML = items.length
+        ? items.map(matchCard).join('')
+        : '<div class="empty">Nada encontrado</div>';
+    }
+
+    /* ═══ TIMES GRID ═══ */
+    function renderTeams(filter = '') {
+      const q = filter.trim().toLowerCase();
+      const teams = state.teams.filter((t) => !q || t.name?.toLowerCase().includes(q) || t.slug?.toLowerCase().includes(q));
+      $('#teamsGrid').innerHTML = teams.map((team) => `
+        <article class="glass-card team-card" data-team="${team.slug || team.id}" role="button" tabindex="0">
+          <div class="logo-box">${team.logo ? `<img src="${team.logo}" alt="${team.name}" loading="lazy" />` : ''}</div>
+          <div>
+            <div class="team-name">${text(team.name)}</div>
+            <div class="team-info">${text(team.city)} · ${text(team.state)}</div>
+          </div>
+        </article>`).join('');
+      $$('#teamsGrid [data-team]').forEach((card) => {
+        card.addEventListener('click', () => openTeamPage(card.dataset.team));
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openTeamPage(card.dataset.team); });
+      });
+    }
+
+    /* ═══ TEAM FULL PAGE ═══ */
+    async function openTeamPage(slug) {
+      // Switch to team detail view
+      $$('.view').forEach((s) => s.classList.remove('active'));
+      $('#view-time-detalhe').classList.add('active');
+      $$('.nav button').forEach((b) => b.classList.remove('active'));
+
+      const target = $('#teamPageContent');
+      target.innerHTML = '<div class="loading"></div>';
+
+      try {
+        const [teamRes, squadRes] = await Promise.all([
+          api('/api/football/teams/' + slug),
+          api('/api/football/teams/' + slug + '/squad').catch(() => ({ data: [] })),
+        ]);
+
+        const team = teamRes.data;
+        const squad = team.elenco || squadRes.data || [];
+        const ultimos = team.ultimosResultados || team.ultimosJogos || [];
+        const proximos = team.proximosJogos || [];
+
+        const posInStandings = state.standings.findIndex((s) => s.slug === slug || s.time?.toLowerCase() === team.name?.toLowerCase());
+        const standing = state.standings[posInStandings];
+
+        target.innerHTML = `
+          <div class="glass-card team-hero">
+            <div class="team-hero-logo">
+              ${team.logo ? `<img src="${team.logo}" alt="${team.name}" />` : '🎽'}
+            </div>
+            <div>
+              <div class="team-hero-name">${text(team.name)}</div>
+              <div class="team-hero-meta">
+                ${team.city ? `<span class="team-meta-tag">📍 ${team.city} - ${text(team.state)}</span>` : ''}
+                ${team.stadium?.name ? `<span class="team-meta-tag">🏟️ ${team.stadium.name}</span>` : ''}
+                ${team.founded ? `<span class="team-meta-tag">📅 Fundado em ${team.founded}</span>` : ''}
+                ${standing ? `<span class="team-meta-tag" style="color:var(--gold);border-color:rgba(251,191,36,.3)">🏆 ${standing.posicao}º lugar · ${standing.pontos} pts</span>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="team-stats-grid">
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">${squad.length}</div>
+              <div class="team-stat-lbl">Jogadores</div>
+            </div>
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">${ultimos.length}</div>
+              <div class="team-stat-lbl">Últimos Jogos</div>
+            </div>
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">${proximos.length}</div>
+              <div class="team-stat-lbl">Próximos Jogos</div>
+            </div>
+            ${standing ? `
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">${standing.vitorias ?? '--'}</div>
+              <div class="team-stat-lbl">Vitórias</div>
+            </div>
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">${standing.saldoGols ?? '--'}</div>
+              <div class="team-stat-lbl">Saldo de Gols</div>
+            </div>` : `
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">--</div><div class="team-stat-lbl">Vitórias</div>
+            </div>
+            <div class="glass-card team-stat-card">
+              <div class="team-stat-val">--</div><div class="team-stat-lbl">Saldo de Gols</div>
+            </div>`}
+          </div>
+
+          ${ultimos.length ? `
+          <div class="section-head"><h2>Últimos Resultados</h2></div>
+          <div class="grid two" style="margin-bottom:32px">${ultimos.slice(0, 6).map(matchCard).join('')}</div>` : ''}
+
+          ${proximos.length ? `
+          <div class="section-head"><h2>Próximos Jogos</h2></div>
+          <div class="grid two" style="margin-bottom:32px">${proximos.slice(0, 6).map(matchCard).join('')}</div>` : ''}
+
+          ${squad.length ? `
+          <div class="section-head"><h2>Elenco</h2><span class="pill">${squad.length} jogadores</span></div>
+          <div class="squad">${squad.slice(0, 30).map((p) => `
+            <div class="glass-card player">
+              ${logo(p.foto, p.nome, 'avatar')}
+              <div>
+                <div class="player-name">${text(p.nome)}</div>
+                <div class="player-pos">${text(p.posicao)}${p.numero ? ' · #' + p.numero : ''}</div>
+              </div>
+            </div>`).join('')}
+          </div>` : ''}
+        `;
+      } catch (err) {
+        target.innerHTML = '<div class="empty">❌ Não foi possível carregar os dados do time.</div>';
+      }
+    }
+
+    /* ═══ STANDINGS ═══ */
+    function renderStandings() {
+      const rows = state.standings.map((p, i) => {
+        let posClass = 'pos-norm';
+        if (i < 6) posClass = 'pos-top';
+        if (i >= 16) posClass = 'pos-rel';
+        if (i === 0) posClass = 'pos-1';
+        if (i === 1) posClass = 'pos-2';
+        if (i === 2) posClass = 'pos-3';
+        return `<tr>
+          <td><span class="pos-badge ${posClass}">${p.posicao}</span></td>
+          <td><div class="inline-team">${logo(p.escudo, p.time)}<strong>${p.time}</strong></div></td>
+          <td><strong>${p.pontos}</strong></td>
+          <td>${p.jogos}</td>
+          <td style="color:var(--green)">${p.vitorias}</td>
+          <td style="color:var(--muted)">${p.empates}</td>
+          <td style="color:var(--red)">${p.derrotas}</td>
+          <td>${p.saldoGols >= 0 ? '+' + p.saldoGols : p.saldoGols}</td>
+        </tr>`;
+      }).join('');
+      $('#standingsTable').innerHTML = `
+        <thead><tr>
+          <th>#</th><th>Time</th><th>Pts</th><th>J</th>
+          <th>V</th><th>E</th><th>D</th><th>SG</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>`;
+    }
+
+    /* ═══ SCORERS ═══ */
+    function renderScorers() {
+      const rows = state.scorers.map((p) => `
+        <tr>
+          <td><span class="pos-badge ${p.posicao <= 3 ? 'pos-' + p.posicao : 'pos-norm'}">${p.posicao}</span></td>
+          <td><div class="inline-team">${logo(p.foto, p.jogador, 'avatar')}<strong>${p.jogador}</strong></div></td>
+          <td>${text(p.time)}</td>
+          <td><strong style="color:var(--gold)">${p.gols} ⚽</strong></td>
+          <td><span class="pill" style="font-size:11px">${p.fotoReal ? '✅ Real' : '🔄 Fallback'}</span></td>
+        </tr>`).join('');
+      $('#scorersTable').innerHTML = `
+        <thead><tr>
+          <th>#</th><th>Jogador</th><th>Time</th><th>Gols</th><th>Foto</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>`;
+    }
+
+    /* ═══ BROADCASTS ═══ */
+    async function renderBroadcasts() {
+      // Busca lista de canais únicos com logos oficiais
+      let canais = [];
+      try {
+        const res = await api('/api/transmissoes/canais');
+        canais = res.data || [];
+      } catch (_) {}
+
+      // Grid de canais clicáveis
+      const tipoLabel = { tv_aberta: 'TV Aberta', tv_fechada: 'TV Fechada', streaming: 'Streaming', youtube: 'YouTube/Digital', desconhecido: 'Outros' };
+      const grupos = {};
+      for (const c of canais) {
+        if (c.tipo === 'desconhecido') continue;
+        if (!grupos[c.tipo]) grupos[c.tipo] = [];
+        grupos[c.tipo].push(c);
+      }
+
+      let html = '';
+      for (const [tipo, lista] of Object.entries(grupos)) {
+        html += `<div style="grid-column:1/-1;margin:8px 0 4px">
+          <h3 style="font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${tipoLabel[tipo] || tipo}</h3>
+        </div>`;
+        html += lista.map(c => `
+          <a href="${c.url || '#'}" target="_blank" rel="noreferrer noopener"
+            class="glass-card"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px 12px;
+                   text-decoration:none;cursor:pointer;transition:all .2s;
+                   border-color:${c.cor}33;text-align:center;"
+            onmouseover="this.style.borderColor='${c.cor}88';this.style.background='${c.cor}11'"
+            onmouseout="this.style.borderColor='${c.cor}33';this.style.background=''"
+            title="${c.descricao || c.canal}">
+            ${c.logo
+              ? `<div style="height:44px;display:flex;align-items:center;justify-content:center">
+                   <img src="${c.logo}" alt="${c.canal}"
+                     style="max-width:90px;max-height:40px;object-fit:contain;filter:brightness(1.1)"
+                     loading="lazy"
+                     onerror="this.src='${c.logoAlt || ''}';this.onerror=null"
+                   />
+                 </div>`
+              : `<div style="width:44px;height:44px;border-radius:50%;background:${c.cor}22;border:2px solid ${c.cor}55;display:grid;place-items:center;font-size:20px">📺</div>`
+            }
+            <div style="font-size:11px;font-weight:700;color:${c.cor};max-width:100px;line-height:1.2">${c.canal}</div>
+            ${c.url ? '<div style="font-size:10px;color:var(--muted);margin-top:2px">▶ Assistir ao vivo</div>' : ''}
+          </a>`).join('');
+      }
+
+      const el = $('#broadcastList');
+      if (el) el.innerHTML = html || '<div class="empty">📺 Canais em breve</div>';
+    }
+
+    /* ═══ NBA ═══ */
+    let nbaConfShowing = 'east';
+
+    function showConf(conf) {
+      nbaConfShowing = conf;
+      document.getElementById('btnLesteNBA').classList.toggle('active', conf === 'east');
+      document.getElementById('btnOesteNBA').classList.toggle('active', conf === 'west');
+      renderNBAStandings();
+    }
+
+    function nbaGameCard(game) {
+      const status = (game.status || '').toLowerCase();
+      const isLive = status === 'live' || status === 'ao_vivo';
+      const isDone = status === 'finished' || status === 'encerrado' || (game.score?.home != null && game.score?.away != null);
+      const isScheduled = !isLive && !isDone;
+
+      const hScore = game.score?.home ?? game.pontosMandante;
+      const aScore = game.score?.away ?? game.pontosVisitante;
+      const hName  = game.homeTeam?.name || game.mandante || '—';
+      const aName  = game.awayTeam?.name || game.visitante || '—';
+      const hLogo  = game.homeTeam?.logo || game.logoMandante;
+      const aLogo  = game.awayTeam?.logo || game.logoVisitante;
+      const hAbbr  = game.homeTeam?.id || game.abreviacaoMandante || hName.substring(0,3).toUpperCase();
+      const aAbbr  = game.awayTeam?.id || game.abreviacaoVisitante || aName.substring(0,3).toUpperCase();
+      const bcast  = (game.broadcast || game.transmissoes || []);
+
+      const statusLabel = isLive
+        ? `<span style="display:inline-flex;align-items:center;gap:5px;color:#f43f5e;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#f43f5e;animation:pulse 1s infinite"></span>AO VIVO · Q${game.period || ''} ${game.clock || ''}</span>`
+        : isDone ? `<span style="color:var(--muted);font-size:12px">✅ ENCERRADO</span>`
+        : `<span style="color:var(--purple-light);font-size:12px">🕐 ${game.time || game.horario || 'Em breve'}</span>`;
+
+      const hWin = isDone && hScore > aScore;
+      const aWin = isDone && aScore > hScore;
+
+      const bcastHtml = bcast.length
+        ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${bcast.map(b => {
+            const cn = typeof b === 'string' ? b : (b.canal || b);
+            return `<span class="pill" style="font-size:11px;padding:3px 10px">📺 ${cn}</span>`;
+          }).join('')}</div>`
+        : '';
+
+      return `<article class="glass-card item-card" style="padding:18px 20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="comp-badge" style="font-size:11px">🏀 NBA${game.arena ? ' · ' + game.arena : ''}</div>
+          ${statusLabel}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px">
+          <!-- TIME MANDANTE -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid ${hWin ? 'rgba(34,197,94,.4)' : 'rgba(255,255,255,.1)'};display:grid;place-items:center;overflow:hidden">
+              ${hLogo ? `<img src="${hLogo}" alt="${hName}" style="width:42px;height:42px;object-fit:contain" loading="lazy" onerror="this.outerHTML='<span style=font-size:18px>🏀</span>'" />` : '<span style="font-size:20px">🏀</span>'}
+            </div>
+            <div style="font-weight:700;font-size:13px;text-align:center;color:${hWin ? 'var(--green)' : 'var(--text)'}">${hAbbr}</div>
+            ${isDone ? `<div style="font-size:26px;font-weight:900;color:${hWin ? 'var(--green)' : 'var(--text)'}">${hScore}</div>` : ''}
+          </div>
+          <!-- VS -->
+          <div style="text-align:center;color:var(--muted);font-weight:800;font-size:18px">${isDone ? '' : 'VS'}</div>
+          <!-- TIME VISITANTE -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid ${aWin ? 'rgba(34,197,94,.4)' : 'rgba(255,255,255,.1)'};display:grid;place-items:center;overflow:hidden">
+              ${aLogo ? `<img src="${aLogo}" alt="${aName}" style="width:42px;height:42px;object-fit:contain" loading="lazy" onerror="this.outerHTML='<span style=font-size:18px>🏀</span>'" />` : '<span style="font-size:20px">🏀</span>'}
+            </div>
+            <div style="font-weight:700;font-size:13px;text-align:center;color:${aWin ? 'var(--green)' : 'var(--text)'}">${aAbbr}</div>
+            ${isDone ? `<div style="font-size:26px;font-weight:900;color:${aWin ? 'var(--green)' : 'var(--text)'}">${aScore}</div>` : ''}
+          </div>
+        </div>
+        ${bcastHtml}
+      </article>`;
+    }
+
+    function renderNBAStandings() {
+      const raw = state.nbaStandings;
+      const list = nbaConfShowing === 'east'
+        ? (raw?.east || raw?.leste || [])
+        : (raw?.west || raw?.oeste || []);
+
+      const rows = list.map((t, i) => {
+        const pos = t.position ?? i + 1;
+        const inPlayoffs = pos <= 6;
+        const playIn = pos === 7 || pos === 8;
+        const posClass = pos === 1 ? 'pos-1' : pos === 2 ? 'pos-2' : pos === 3 ? 'pos-3' : inPlayoffs ? 'pos-top' : 'pos-norm';
+        const pct = t.winPct != null ? (Number(t.winPct) <= 1 ? Math.round(Number(t.winPct) * 100) : Number(t.winPct)) : (t.wins && t.losses != null ? Math.round(t.wins/(t.wins+t.losses)*100) : '--');
+        const teamName = t.nomePT || t.team || t.time || '—';
+        const logoUrl  = t.logo || t.escudo;
+        return `<tr style="${playIn ? 'background:rgba(251,191,36,.04)' : ''}">
+          <td><span class="pos-badge ${posClass}">${pos}</span></td>
+          <td>
+            <div class="inline-team">
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);display:grid;place-items:center;overflow:hidden;flex-shrink:0">
+                ${logoUrl ? `<img src="${logoUrl}" alt="${teamName}" style="width:22px;height:22px;object-fit:contain" loading="lazy" onerror="this.style.display='none'" />` : '<span style="font-size:14px">🏀</span>'}
+              </div>
+              <strong style="font-size:13px">${teamName}</strong>
+            </div>
+          </td>
+          <td style="color:var(--green);font-weight:700">${t.wins ?? t.vitorias ?? '--'}</td>
+          <td style="color:var(--red)">${t.losses ?? t.derrotas ?? '--'}</td>
+          <td style="color:var(--muted);font-size:12px">${pct}%</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('nbaStandingsTable').innerHTML = `
+        <thead><tr>
+          <th>#</th><th>Time</th>
+          <th title="Vitórias">V</th><th title="Derrotas">D</th><th title="Aproveitamento">%</th>
+        </tr></thead>
+        <tbody>${rows || '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Tabela em breve</td></tr>'}</tbody>`;
+    }
+
+    function renderNBA() {
+      const todayDate = new Date().toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'short' });
+      const datePill = document.getElementById('nbaTodayDate');
+      if (datePill) datePill.textContent = todayDate;
+
+      // Últimos resultados = jogos com placar
+      const resultados = [...state.nbaToday].filter(g => {
+        const s = (g.status || '').toLowerCase();
+        return s === 'finished' || s === 'encerrado' || (g.score?.home != null);
+      });
+      const emAndamento = state.nbaToday.filter(g => {
+        const s = (g.status || '').toLowerCase();
+        return s === 'live' || s === 'ao_vivo';
+      });
+      const agendados = state.nbaToday.filter(g => {
+        const s = (g.status || '').toLowerCase();
+        return s === 'scheduled' || s === 'agendado';
+      });
+      const todayDisplay = [...emAndamento, ...resultados, ...agendados];
+
+      $('#nbaTodayGames').innerHTML = todayDisplay.length
+        ? todayDisplay.map(nbaGameCard).join('')
+        : '<div class="empty">🏀 Sem jogos da NBA hoje</div>';
+
+      $('#nbaUpcoming').innerHTML = state.nbaUpcoming.length
+        ? state.nbaUpcoming.slice(0, 8).map(nbaGameCard).join('')
+        : '<div class="empty">Nenhum jogo próximo encontrado</div>';
+
+      renderNBAStandings();
+    }
+
+    /* ═══ UFC ═══ */
+    function ufcFighterCard(fighter, side) {
+      if (!fighter) return `<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div style="width:80px;height:80px;border-radius:50%;background:rgba(244,63,94,.1);border:2px solid rgba(244,63,94,.3);display:grid;place-items:center;font-size:28px">🥊</div>
+        <div style="font-weight:700;font-size:14px;text-align:center">TBA</div>
+      </div>`;
+      const photo = fighter.photo || fighter.foto;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:2px solid rgba(244,63,94,.5);background:#1a0538">
+          ${photo
+            ? `<img src="${photo}" alt="${fighter.name||fighter.nome||''}" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.outerHTML='<span style=font-size:30px;display:grid;place-items:center;height:100%>🥊</span>'" />`
+            : '<span style="font-size:30px;display:grid;place-items:center;height:100%">🥊</span>'}
+        </div>
+        <div style="font-weight:800;font-size:14px;color:${side==='red'?'#f43f5e':'var(--purple-light)'}">${fighter.name||fighter.nome||'TBA'}</div>
+        ${fighter.record||fighter.cartel ? `<div style="font-size:11px;color:var(--muted);font-weight:600">${fighter.record||fighter.cartel}</div>` : ''}
+        ${fighter.country ? `<div style="font-size:11px;color:var(--muted)">${fighter.country}</div>` : ''}
+      </div>`;
+    }
+
+    function ufcFightRow(fight, isMain) {
+      const f1 = fight.fighter1 || { name: fight.red || fight.fighter1Name || 'TBA' };
+      const f2 = fight.fighter2 || { name: fight.blue || fight.fighter2Name || 'TBA' };
+      return `<div class="glass-card" style="padding:16px 20px;border-color:${isMain ? 'rgba(244,63,94,.4)' : 'rgba(255,255,255,.07)'}">
+        ${isMain ? '<div style="font-size:11px;font-weight:800;color:#f43f5e;letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase">⭐ LUTA PRINCIPAL</div>' : ''}
+        ${fight.weightClass||fight.categoria ? `<div class="comp-badge" style="margin-bottom:10px">⚖️ ${fight.weightClass||fight.categoria}</div>` : ''}
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px">
+          ${ufcFighterCard(f1, 'red')}
+          <div style="font-size:20px;font-weight:900;color:var(--muted);text-align:center">VS</div>
+          ${ufcFighterCard(f2, 'blue')}
+        </div>
+        ${fight.rounds ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">${fight.rounds} rounds</div>` : ''}
+      </div>`;
+    }
+
+    function ufcNextEventHtml(ev) {
+      if (!ev) return '<div class="empty">🥊 Nenhum evento UFC encontrado</div>';
+      const nome = ev.nome || ev.name || ev.title || 'UFC Event';
+      const data = ev.data || ev.date || '';
+      const local = [ev.local, ev.cidade, ev.pais].filter(Boolean).join(' · ');
+      const bcast = ev.transmissoes || [];
+
+      const bcastHtml = bcast.length
+        ? bcast.map(b => `<span class="pill" style="font-size:11px">📺 ${b.canal||b}</span>`).join('')
+        : '<span class="pill" style="font-size:11px">📺 A confirmar</span>';
+
+      const mainFight = ev.lutaPrincipal || ev.mainFight || (ev.lutas||ev.fights||[])[0];
+
+      return `<div class="glass-card" style="padding:28px;border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.04)">
+        ${ev.imagemEvento ? `<img src="${ev.imagemEvento}" alt="${nome}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:18px" loading="lazy" />` : ''}
+        <div style="font-size:22px;font-weight:900;margin-bottom:6px">${nome}</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+          ${data ? `<span class="comp-badge">📅 ${formatarData(data)}</span>` : ''}
+          ${local ? `<span class="comp-badge">📍 ${local}</span>` : ''}
+          ${ev.prelims ? `<span class="comp-badge">🕐 Prelims ${ev.prelims.horario}</span>` : ''}
+          ${ev.mainCard ? `<span class="comp-badge" style="color:var(--gold);border-color:rgba(251,191,36,.3)">⭐ Main Card ${ev.mainCard.horario}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">${bcastHtml}</div>
+        ${mainFight ? ufcFightRow(mainFight, true) : ''}
+        ${ev.lutas?.length || ev.fights?.length ? `<div style="font-size:12px;color:var(--muted);margin-top:12px">🥊 ${ev.lutas?.length||ev.fights?.length} lutas no card total</div>` : ''}
+      </div>`;
+    }
+
+    function ufcCalCard(ev) {
+      const nome = ev.nome || ev.name || ev.title || 'UFC Event';
+      const data = ev.data || ev.date || '';
+      const local = ev.local || ev.cidade || ev.pais || '';
+      const bcast = ev.transmissoes || [];
+      const bcastHtml = bcast.length ? bcast.map(b => `<span class="pill" style="font-size:10px">📺 ${b.canal||b}</span>`).join('') : '';
+      return `<article class="glass-card ufc-card">
+        ${ev.imagemEvento ? `<img src="${ev.imagemEvento}" alt="${nome}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px" loading="lazy" />` : ''}
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">${data ? formatarData(data) : ''}</div>
+        <div style="font-weight:800;font-size:14px;margin-bottom:6px">${nome}</div>
+        ${local ? `<div class="comp-badge" style="font-size:11px;margin-bottom:8px">📍 ${local}</div>` : ''}
+        ${ev.lutaPrincipal ? ufcFightRow(ev.lutaPrincipal, false) : ''}
+        ${bcastHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">${bcastHtml}</div>` : ''}
+      </article>`;
+    }
+
+    function renderUFC() {
+      $('#ufcNextEvent').innerHTML = ufcNextEventHtml(state.ufcNext);
+
+      // Fight card do próximo evento
+      const lutas = state.ufcNext?.lutas || state.ufcNext?.fights || [];
+      if (lutas.length) {
+        const main = lutas.filter(f => f.isMain || f.principal);
+        const rest = lutas.filter(f => !f.isMain && !f.principal);
+        $('#ufcFightCard').innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">
+          ${[...main, ...rest].slice(0, 12).map((f, i) => ufcFightRow(f, i === 0 && !main.length)).join('')}
+        </div>`;
+      } else {
+        $('#ufcFightCard').innerHTML = '<div class="empty">🥊 Card completo em breve</div>';
+      }
+
+      $('#ufcCalendar').innerHTML = state.ufcCalendar.length
+        ? state.ufcCalendar.slice(0, 9).map(ufcCalCard).join('')
+        : '<div class="empty">Calendário em breve</div>';
+    }
+
+    /* ═══ NOTÍCIAS ═══ */
+    function renderNews() {
+      $('#newsList').innerHTML = state.news.length
+        ? state.news.map((item) => `
+          <article class="glass-card news-card">
+            ${item.imagem
+              ? `<img class="news-thumb" src="${item.imagem}" alt="" loading="lazy" decoding="async" />`
+              : '<span class="news-thumb"></span>'}
+            <div>
+              <div class="news-source">${text(item.fonte)}</div>
+              <div class="news-title">${text(item.titulo)}</div>
+              <div class="news-summary">${text(item.resumo, item.categoria)}</div>
+            </div>
+          </article>`).join('')
+        : '<div class="empty">📰 Sem notícias carregadas agora</div>';
+    }
+
+    /* ═══ DOCS ═══ */
+    function renderDocs() {
+      const football = [
+        ['Pacote completo',        '/api/football/brasil/full'],
+        ['Jogos do dia',           '/api/football/matches/today'],
+        ['Próximos jogos',         '/api/football/matches/upcoming?days=14'],
+        ['Últimos resultados',     '/api/football/matches/recent'],
+        ['Todos os times',         '/api/football/teams'],
+        ['Detalhe do time',        '/api/football/teams/flamengo'],
+        ['Elenco com fotos',       '/api/football/teams/flamengo/squad'],
+        ['Tabela Brasileirão',     '/api/football/competitions/brasileirao-serie-a/standings'],
+        ['Artilharia',             '/api/football/competitions/brasileirao-serie-a/top-scorers'],
+        ['Notícias',               '/api/noticias'],
+      ];
+      const nba = [
+        ['Jogos hoje (com logos)',  '/api/nba/games/today'],
+        ['Próximos + transmissão', '/api/nba/games/upcoming?days=7'],
+        ['Tabela Leste/Oeste',     '/api/nba/classificacao/br'],
+        ['Times NBA (PT-BR)',       '/api/nba/times/br'],
+        ['Notícias NBA em PT',     '/api/nba/noticias/br'],
+        ['Artilharia NBA',         '/api/nba/artilharia'],
+      ];
+      const ufc = [
+        ['Próximo evento + card',  '/api/ufc/enriquecido'],
+        ['Calendário + imagens',   '/api/ufc/calendario/enriquecido'],
+        ['Próximo evento simples', '/api/ufc/proximo'],
+        ['Calendário simples',     '/api/ufc/calendario'],
+      ];
+      const tv = [
+        ['Jogos hoje + onde assistir', '/api/transmissoes/hoje'],
+        ['Todos os canais (logos)',     '/api/transmissoes/canais'],
+        ['Só streaming',               '/api/transmissoes/canais?tipo=streaming'],
+        ['Só TV aberta',               '/api/transmissoes/canais?tipo=tv_aberta'],
+        ['Canal por ID',               '/api/transmissoes/canais/globo'],
+        ['Canais do Brasileirão',      '/api/transmissoes/liga/bra.1'],
+        ['Canais da Libertadores',     '/api/transmissoes/liga/conmebol.libertadores'],
+        ['Canais da NBA',              '/api/transmissoes/liga/nba'],
+        ['Canais do UFC',              '/api/transmissoes/liga/ufc'],
+      ];
+
+      function epCard(name, path) {
+        return `<a class="glass-card endpoint" href="${path}" target="_blank" rel="noreferrer">
+          <div><span class="endpoint-tag">GET</span><strong>${name}</strong></div>
+          <code>${base}${path}</code>
+        </a>`;
+      }
+
+      const docsFootball = document.getElementById('docsFootball');
+      const docsNba      = document.getElementById('docsNba');
+      const docsUfc      = document.getElementById('docsUfc');
+      if (docsFootball) docsFootball.innerHTML = football.map(([n, p]) => epCard(n, p)).join('');
+      if (docsNba)      docsNba.innerHTML      = nba.map(([n, p]) => epCard(n, p)).join('');
+      if (docsUfc)      docsUfc.innerHTML      = ufc.map(([n, p]) => epCard(n, p)).join('');
+
+      // Docs transmissoes — seção extra
+      const docsTv = document.getElementById('docsTv');
+      if (docsTv) docsTv.innerHTML = tv.map(([n, p]) => epCard(n, p)).join('');
+    }
+
+    /* ═══ NAVIGATION ═══ */
+    function bindNavigation() {
+      $$('.nav button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const view = button.dataset.view;
+          if (view === 'times' && $('#view-time-detalhe').classList.contains('active')) {
+            // already on times subview, go back to grid
+          }
+          $$('.nav button').forEach((b) => b.classList.toggle('active', b === button));
+          $$('.view').forEach((s) => s.classList.toggle('active', s.id === 'view-' + view));
+          window.location.hash = view;
+        });
+      });
+
+      $('#backToTimes').addEventListener('click', () => {
+        $$('.view').forEach((s) => s.classList.remove('active'));
+        $('#view-times').classList.add('active');
+        const timesBtn = document.querySelector('.nav button[data-view="times"]');
+        if (timesBtn) {
+          $$('.nav button').forEach((b) => b.classList.remove('active'));
+          timesBtn.classList.add('active');
+        }
+        window.location.hash = 'times';
+      });
+
+      $('#teamSearch').addEventListener('input', (e) => renderTeams(e.target.value));
+      $('#agendaSearch').addEventListener('input', (e) => renderAgenda(e.target.value));
+      $('#closeDrawer').addEventListener('click', () => {
+        $('#teamDrawer').classList.remove('open');
+        $('#teamDrawer').setAttribute('aria-hidden', 'true');
+      });
+
+      $('#copyBase').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(base);
+          $('#copyBase').textContent = '✅ Copiado!';
+          setTimeout(() => $('#copyBase').textContent = 'Copiar URL', 1500);
+        } catch (_) {}
+      });
+
+      // Hash routing on load
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        const btn = document.querySelector(`.nav button[data-view="${hash}"]`);
+        if (btn) btn.click();
+      }
+    }
+
+    /* ═══ LOAD ═══ */
+    async function load() {
+      $('#baseUrl').textContent = base + '/api';
+      bindNavigation();
+
+      // Load core football data
+      try {
+        const [full, teams, agenda, standings, scorers, news] = await Promise.all([
+          api('/api/football/brasil/full'),
+          api('/api/football/teams'),
+          api('/api/football/matches/upcoming?days=14'),
+          api('/api/football/competitions/brasileirao-serie-a/standings'),
+          api('/api/football/competitions/brasileirao-serie-a/top-scorers'),
+          api('/api/noticias?limit=12'),
+        ]);
+        state.full = full.data;
+        state.teams = teams.data;
+        state.agenda = [...(full.data.jogosDoDia || []), ...(agenda.data || [])];
+        state.standings = standings.data;
+        state.scorers = scorers.data;
+        state.news = news.data;
+
+        renderMetrics();
+        renderHome();
+        renderAgenda();
+        renderTeams();
+        renderStandings();
+        renderScorers();
+        renderNews();
+        renderDocs();
+        // Canais de streaming — async separado (não bloqueia o restante)
+        renderBroadcasts();
+      } catch (err) {
+        console.error('Football data error:', err);
+        $('#onlineText').textContent = 'Parcial';
+        $('#statusDot').style.background = '#fb923c';
+        $('#todayMatches').innerHTML = '<div class="empty">⚠️ Erro ao carregar dados do futebol.</div>';
+        renderDocs();
+        renderBroadcasts();
+
+      }
+
+      // Load NBA data — usa endpoints premium com logos e transmissões
+      try {
+        const [nbaToday, nbaUpcoming, nbaStandings] = await Promise.all([
+          api('/api/nba/games/today').catch(() => api('/api/nba/jogos/hoje')),
+          api('/api/nba/games/upcoming?days=7').catch(() => api('/api/nba/proximos')),
+          api('/api/nba/classificacao/br').catch(() => api('/api/nba/standings').catch(() => ({ data: { east: [], west: [] } }))),
+        ]);
+        state.nbaToday    = nbaToday.data || [];
+        state.nbaUpcoming = nbaUpcoming.data || [];
+        state.nbaStandings = nbaStandings.data || { east: [], west: [] };
+        renderNBA();
+      } catch (err) {
+        console.warn('NBA data error:', err);
+        $('#nbaTodayGames').innerHTML = '<div class="empty">🏀 Dados NBA em breve</div>';
+        $('#nbaUpcoming').innerHTML = '';
+        $('#nbaStandingsTable').innerHTML = '<tbody><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Tabela NBA em breve</td></tr></tbody>';
+      }
+
+      // Load UFC data — usa endpoint enriquecido com imagens, horários e cartel
+      try {
+        const [ufcNext, ufcCal] = await Promise.all([
+          api('/api/ufc/enriquecido').catch(() => api('/api/ufc/proximo')),
+          api('/api/ufc/calendario/enriquecido').catch(() => api('/api/ufc/calendario')),
+        ]);
+        state.ufcNext    = ufcNext.data;
+        state.ufcCalendar = ufcCal.data || [];
+        renderUFC();
+      } catch (err) {
+        console.warn('UFC data error:', err);
+        $('#ufcNextEvent').innerHTML = '<div class="empty">🥊 Dados UFC em breve</div>';
+        $('#ufcCalendar').innerHTML = '';
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

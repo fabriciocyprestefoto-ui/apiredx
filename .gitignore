@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.env
+.cache.json
+
+# Scripts de exploração / prototipagem (mover para scripts/ se quiser manter)
+parse_ge.js
+parse_ge2.js
+probe.js
+find_seasons.js
+server_bot.js
+server_mid.js
+server_top.js
+server.js
+test.js
+ge_classificacao.json
+ge.globo.com_*.html
+.vercel

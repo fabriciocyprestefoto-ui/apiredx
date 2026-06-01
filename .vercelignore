@@ -1,0 +1,17 @@
+node_modules
+dist
+.cache.json
+*.log
+android
+parse_ge.js
+parse_ge2.js
+probe.js
+find_seasons.js
+server_bot.js
+server_mid.js
+server_top.js
+server.js
+test.js
+BACKUP_GIT.md
+public/landing-anderson-alinhada-corrigida
+public/landing-anderson-alinhada-corrigida.zip

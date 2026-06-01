@@ -1,0 +1,1742 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="REDX Esporte" />
+  <meta name="theme-color" content="#0d0120" />
+  <title>REDX API Esporte — Mobile</title>
+  <meta name="description" content="REDX API Esporte — Futebol, NBA, UFC ao vivo no seu celular." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d0120;
+      --bg2: #120228;
+      --purple: #a855f7;
+      --purple-light: #c084fc;
+      --purple-deep: #7c3aed;
+      --violet: #8b5cf6;
+      --pink: #ec4899;
+      --cyan: #22d3ee;
+      --gold: #fbbf24;
+      --green: #34d399;
+      --red: #f43f5e;
+      --orange: #fb923c;
+      --blue: #60a5fa;
+      --text: #f1f0ff;
+      --muted: #a78bca;
+      --soft: #7c6899;
+      --glass: rgba(255,255,255,0.055);
+      --glass-border: rgba(255,255,255,0.12);
+      --glass-strong: rgba(168,85,247,0.18);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --bottom-nav-h: 72px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100dvh;
+      background:
+        radial-gradient(ellipse 100% 50% at 30% -5%, rgba(139,92,246,0.45), transparent 55%),
+        radial-gradient(ellipse 70% 40% at 80% 5%, rgba(168,85,247,0.28), transparent 50%),
+        radial-gradient(ellipse 60% 60% at 50% 100%, rgba(76,29,149,0.35), transparent 60%),
+        linear-gradient(160deg, #0d0120 0%, #1a0538 50%, #0a0118 100%);
+      color: var(--text);
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+      padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom));
+      padding-top: var(--safe-top);
+      overscroll-behavior: none;
+    }
+
+    /* Orb background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -100px; left: -100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
+      animation: orbFloat 14s ease-in-out infinite;
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0); }
+      50% { transform: translate(30px,-20px); }
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; background: none; border: none; color: inherit; }
+
+    /* ═══════════════ TOP BAR ═══════════════ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 10px;
+      background: rgba(13,1,32,0.82);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      min-height: 56px;
+    }
+
+    .topbar-logo {
+      height: 34px;
+      width: auto;
+      filter: drop-shadow(0 0 8px rgba(168,85,247,0.6));
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(52,211,153,0.9);
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(52,211,153,0.9); }
+      50% { box-shadow: 0 0 16px rgba(52,211,153,1), 0 0 24px rgba(52,211,153,0.4); }
+    }
+
+    /* ═══════════════ PULL TO REFRESH ═══════════════ */
+    .ptr-indicator {
+      position: fixed;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      z-index: 89;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(168,85,247,0.2);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--purple-light);
+      backdrop-filter: blur(20px);
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .ptr-indicator.visible { transform: translateX(-50%) translateY(8px); }
+
+    .ptr-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(192,132,252,0.3);
+      border-top-color: var(--purple-light);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════════ MAIN CONTENT ═══════════════ */
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 12px 14px 16px;
+    }
+
+    /* ═══════════════ VIEWS ═══════════════ */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ═══════════════ HERO METRICS ═══════════════ */
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      padding: 16px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    }
+
+    .metric-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+    .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: 2px;
+    }
+
+    /* ═══════════════ SECTION HEADER ═══════════════ */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0 12px;
+    }
+
+    .section-head h2 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .section-head .pill {
+      padding: 3px 10px;
+      background: var(--glass-strong);
+      border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--purple-light);
+    }
+
+    /* ═══════════════ SPORT BANNER ═══════════════ */
+    .sport-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sport-banner.football { background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(168,85,247,0.1)); border-color: rgba(168,85,247,0.3); }
+    .sport-banner.nba { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(251,146,60,0.1)); border-color: rgba(251,146,60,0.3); }
+    .sport-banner.ufc { background: linear-gradient(135deg, rgba(244,63,94,0.25), rgba(251,113,133,0.1)); border-color: rgba(244,63,94,0.3); }
+
+    .banner-icon { font-size: 42px; flex-shrink: 0; }
+    .banner-title { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+    .banner-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ═══════════════ MATCH CARDS ═══════════════ */
+    .matches-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .match-card {
+      padding: 14px 16px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .match-card:active { transform: scale(0.98); }
+
+    .match-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+
+    .match-comp {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple-light);
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .match-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .match-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .team-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--glass-border);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      font-size: 20px;
+    }
+
+    .team-logo img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+
+    .team-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .match-center { text-align: center; flex-shrink: 0; }
+
+    .match-score {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .match-time {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .match-vs {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--muted);
+      display: block;
+    }
+
+    .match-time-big {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text);
+      display: block;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge.live { background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.3); color: var(--red); }
+    .badge.live::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: statusPulse 1s ease-in-out infinite; }
+    .badge.finished { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+    .badge.upcoming { background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); color: var(--purple-light); }
+    .badge.nba-badge { color: var(--orange); border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.1); }
+
+    /* ═══════════════ TABLE ═══════════════ */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); }
+    .standings-table { width: 100%; border-collapse: collapse; }
+    .standings-table thead th {
+      padding: 10px 10px;
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.03);
+      font-weight: 700;
+    }
+    .standings-table tbody td {
+      padding: 10px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      white-space: nowrap;
+    }
+    .standings-table tbody tr:last-child td { border-bottom: none; }
+    .standings-table tbody tr:hover td { background: rgba(168,85,247,0.06); }
+
+    .pos-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    .pos-1 { background: rgba(251,191,36,0.2); color: var(--gold); border: 1px solid rgba(251,191,36,0.3); }
+    .pos-2 { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
+    .pos-3 { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.2); }
+    .pos-g4 { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+    .pos-rel { background: rgba(244,63,94,0.12); color: var(--red); border: 1px solid rgba(244,63,94,0.2); }
+    .pos-norm { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
+
+    .inline-team { display: flex; align-items: center; gap: 8px; }
+    .team-mini-logo {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ═══════════════ UFC CARDS ═══════════════ */
+    .ufc-event-card {
+      padding: 16px;
+      background: var(--glass);
+      border: 1px solid rgba(244,63,94,0.2);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ufc-event-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(244,63,94,0.4), transparent);
+    }
+
+    .ufc-event-img {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .ufc-event-name {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      margin-bottom: 4px;
+    }
+
+    .ufc-event-date {
+      font-size: 12px;
+      color: var(--red);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .ufc-fight-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .ufc-fight-row:last-child { border-bottom: none; }
+
+    .ufc-fighter-mini {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .ufc-fighter-photo {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid rgba(244,63,94,0.3);
+    }
+
+    .ufc-fighter-name { font-size: 11px; font-weight: 700; text-align: center; }
+    .ufc-fighter-record { font-size: 10px; color: var(--muted); }
+    .ufc-vs-center { font-size: 16px; font-weight: 900; color: var(--red); text-shadow: 0 0 12px rgba(244,63,94,0.5); }
+    .ufc-weight { font-size: 9px; color: var(--muted); text-align: center; margin-top: 2px; }
+
+    /* ═══════════════ NBA CARDS ═══════════════ */
+    .nba-game-card {
+      padding: 14px 16px;
+      background: var(--glass);
+      border: 1px solid rgba(251,146,60,0.2);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      margin-bottom: 10px;
+    }
+
+    .nba-score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .nba-team-score { flex: 1; text-align: center; }
+    .nba-abbr { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+    .nba-pts {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff, var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nba-sep { font-size: 22px; color: rgba(255,255,255,0.2); font-weight: 300; }
+
+    /* ═══════════════ TEAM CARDS ═══════════════ */
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .team-card {
+      padding: 12px 8px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(20px);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .team-card:active { transform: scale(0.95); background: rgba(168,85,247,0.1); }
+
+    .team-card-logo {
+      width: 44px; height: 44px;
+      margin: 0 auto 6px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .team-card-logo img { width: 85%; height: 85%; object-fit: contain; }
+    .team-card-name { font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.2; }
+
+    /* ═══════════════ SCORERS LIST ═══════════════ */
+    .scorer-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(16px);
+      margin-bottom: 8px;
+    }
+
+    .scorer-rank {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .scorer-photo {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .scorer-info { flex: 1; min-width: 0; }
+    .scorer-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .scorer-team { font-size: 11px; color: var(--muted); }
+    .scorer-goals {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex-shrink: 0;
+    }
+
+    /* ═══════════════ NEWS CARDS ═══════════════ */
+    .news-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .news-card {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .news-card:active { transform: scale(0.99); }
+
+    .news-thumb {
+      width: 80px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .news-content { flex: 1; min-width: 0; }
+    .news-source { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--purple-light); margin-bottom: 4px; }
+    .news-title { font-size: 13px; font-weight: 700; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ═══════════════ EMPTY / LOADING ═══════════════ */
+    .loading-state, .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 140px;
+      color: var(--muted);
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .loading-spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(168,85,247,0.2);
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ═══════════════ BOTTOM NAV ═══════════════ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: calc(var(--bottom-nav-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      display: flex;
+      align-items: flex-start;
+      background: rgba(13,1,32,0.88);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-top: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .bottom-nav-inner {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: var(--bottom-nav-h);
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 100%;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      padding-top: 6px;
+    }
+
+    .nav-item-icon {
+      font-size: 22px;
+      transition: transform 0.2s ease;
+      line-height: 1;
+    }
+
+    .nav-item-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--soft);
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active .nav-item-label { color: var(--purple-light); }
+    .nav-item.active .nav-item-icon { transform: translateY(-2px) scale(1.1); }
+
+    /* Active pill indicator */
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 18px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--purple-light);
+      box-shadow: 0 0 8px rgba(192,132,252,0.8);
+    }
+
+    .nav-item[data-tab="nba"].active::after { background: var(--orange); box-shadow: 0 0 8px rgba(251,146,60,0.8); }
+    .nav-item[data-tab="ufc"].active::after { background: var(--red); box-shadow: 0 0 8px rgba(244,63,94,0.8); }
+
+    /* Active glow for nav items */
+    .nav-item[data-tab="nba"].active .nav-item-label { color: var(--orange); }
+    .nav-item[data-tab="ufc"].active .nav-item-label { color: var(--red); }
+
+    /* ═══════════════ DRAWER (team detail) ═══════════════ */
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+    }
+    .drawer.open { display: block; }
+
+    .drawer-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px);
+    }
+
+    .drawer-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 92dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: rgba(12,2,32,0.96);
+      border-top: 1px solid var(--glass-border);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -20px 80px rgba(0,0,0,0.8);
+      backdrop-filter: blur(40px);
+      padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    }
+
+    .drawer.open .drawer-sheet { transform: translateY(0); }
+
+    .drawer-handle {
+      display: flex;
+      justify-content: center;
+      padding: 14px 0 8px;
+    }
+
+    .drawer-handle::before {
+      content: '';
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .drawer-content { padding: 0 16px 20px; }
+
+    .team-hero-mobile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 16px;
+    }
+
+    .team-hero-logo-mobile {
+      width: 72px; height: 72px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--glass-border);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .team-hero-logo-mobile img { width: 85%; height: 85%; object-fit: contain; }
+    .team-hero-name-mobile { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+    .team-hero-meta-mobile { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .team-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .team-stat-box {
+      text-align: center;
+      padding: 12px 8px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .team-stat-val {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .team-stat-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; margin-top: 3px; }
+
+    .squad-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .squad-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .squad-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      border: 1px solid var(--glass-border);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .squad-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .squad-player-name { font-size: 12px; font-weight: 700; }
+    .squad-player-pos { font-size: 10px; color: var(--muted); }
+
+    /* ═══════════════ FILTER SEARCH ═══════════════ */
+    .search-box {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(16px);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus { border-color: rgba(168,85,247,0.4); }
+    .search-box::placeholder { color: var(--soft); }
+
+    /* ═══════════════ GLASS SECTION WRAPPER ═══════════════ */
+    .glass-section {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      padding: 14px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+
+    /* ═══════════════ CONFERENCE TABS ═══════════════ */
+    .conf-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .conf-tab {
+      flex: 1;
+      padding: 8px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .conf-tab.active {
+      background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(168,85,247,0.15));
+      border-color: rgba(168,85,247,0.4);
+      color: white;
+    }
+
+    /* ═══════════════ TOAST ═══════════════ */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(168,85,247,0.25);
+      border: 1px solid rgba(168,85,247,0.4);
+      color: var(--purple-light);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(20px);
+      z-index: 999;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ═══════════════ HEADER DATE ═══════════════ */
+    .greeting-card {
+      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(168,85,247,0.08));
+      border: 1px solid rgba(168,85,247,0.25);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .greeting-text { font-size: 16px; font-weight: 800; }
+    .greeting-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .greeting-emoji { font-size: 36px; }
+
+    /* ═══════════════ QUICK LINKS ═══════════════ */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .quick-link:active { transform: scale(0.97); }
+    .quick-link-icon { font-size: 22px; }
+    .quick-link-text { font-size: 13px; font-weight: 700; }
+    .quick-link-sub { font-size: 10px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════ TOPBAR ════════════ -->
+  <header class="topbar">
+    <img src="/img/redx-logo.png" alt="REDX API Esporte" class="topbar-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"/>
+    <span style="display:none;font-size:18px;font-weight:900;background:linear-gradient(135deg,#c084fc,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">REDX</span>
+    <div class="topbar-right">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="statusText">Online</span>
+      </div>
+      <a href="/?desktop=1" style="font-size:11px;color:var(--muted);padding:5px 10px;background:var(--glass);border:1px solid var(--glass-border);border-radius:999px;white-space:nowrap">🖥 Desktop</a>
+    </div>
+  </header>
+
+  <!-- Pull to refresh indicator -->
+  <div class="ptr-indicator" id="ptrIndicator">
+    <div class="ptr-spinner"></div>
+    Atualizando...
+  </div>
+
+  <!-- ════════════ VIEWS ════════════ -->
+  <main>
+
+    <!-- ── VIEW: HOME ── -->
+    <section class="view active" id="view-home">
+      <div class="greeting-card">
+        <div>
+          <div class="greeting-text" id="greetingText">Boa noite! 👋</div>
+          <div class="greeting-date" id="greetingDate"></div>
+        </div>
+        <span class="greeting-emoji">⚽</span>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-strip">
+        <div class="metric-card">
+          <span class="metric-icon">🎽</span>
+          <div class="metric-label">Times</div>
+          <div class="metric-value" id="m-teams">--</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">⚽</span>
+          <div class="metric-label">Jogos Hoje</div>
+          <div class="metric-value" id="m-today">--</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">🥊</span>
+          <div class="metric-label">UFC Evento</div>
+          <div class="metric-value" id="m-ufc">--</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">🏀</span>
+          <div class="metric-label">NBA Hoje</div>
+          <div class="metric-value" id="m-nba">--</div>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="quick-links">
+        <div class="quick-link" onclick="switchTab('brasileirao')">
+          <span class="quick-link-icon">🏆</span>
+          <div>
+            <div class="quick-link-text">Brasileirão</div>
+            <div class="quick-link-sub">Tabela Série A</div>
+          </div>
+        </div>
+        <div class="quick-link" onclick="switchTab('nba')">
+          <span class="quick-link-icon">🏀</span>
+          <div>
+            <div class="quick-link-text">NBA</div>
+            <div class="quick-link-sub">Jogos ao vivo</div>
+          </div>
+        </div>
+        <div class="quick-link" onclick="switchTab('ufc')">
+          <span class="quick-link-icon">🥊</span>
+          <div>
+            <div class="quick-link-text">UFC</div>
+            <div class="quick-link-sub">Próximos eventos</div>
+          </div>
+        </div>
+        <div class="quick-link" onclick="switchTab('artilharia')">
+          <span class="quick-link-icon">👟</span>
+          <div>
+            <div class="quick-link-text">Artilharia</div>
+            <div class="quick-link-sub">Goleadores</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's matches -->
+      <div class="section-head">
+        <h2>Jogos de Hoje</h2>
+        <span class="pill" id="todayDateLabel"></span>
+      </div>
+      <div class="matches-list" id="todayMatchesMobile"><div class="loading-state"><div class="loading-spinner"></div>Carregando...</div></div>
+
+      <div class="section-head">
+        <h2>Próximos Jogos</h2>
+        <span class="pill">7 dias</span>
+      </div>
+      <div class="matches-list" id="upcomingMatchesMobile"><div class="loading-state"><div class="loading-spinner"></div></div></div>
+    </section>
+
+    <!-- ── VIEW: BRASILEIRÃO ── -->
+    <section class="view" id="view-brasileirao">
+      <div class="sport-banner football">
+        <span class="banner-icon">🏆</span>
+        <div>
+          <div class="banner-title">Brasileirão</div>
+          <div class="banner-sub">Série A 2026 — Tabela</div>
+        </div>
+      </div>
+      <div class="glass-section table-wrap">
+        <table class="standings-table" id="standingsMobile"><thead><tr><th>#</th><th>Time</th><th>P</th><th>J</th><th>V</th><th>D</th><th>SG</th></tr></thead><tbody id="standingsBodyMobile"><tr><td colspan="7"><div class="loading-state"><div class="loading-spinner"></div></div></td></tr></tbody></table>
+      </div>
+    </section>
+
+    <!-- ── VIEW: NBA ── -->
+    <section class="view" id="view-nba">
+      <div class="sport-banner nba">
+        <span class="banner-icon">🏀</span>
+        <div>
+          <div class="banner-title" style="background:linear-gradient(135deg,#fff,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">NBA</div>
+          <div class="banner-sub">National Basketball Association</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h2>Jogos de Hoje</h2>
+        <span class="pill" id="nbaTodayLabel"></span>
+      </div>
+      <div id="nbaTodayMobile"><div class="loading-state"><div class="loading-spinner"></div></div></div>
+
+      <div class="section-head">
+        <h2>Classificação</h2>
+      </div>
+      <div class="conf-tabs">
+        <div class="conf-tab active" onclick="switchConf('leste', this)" id="lesteTab">Leste</div>
+        <div class="conf-tab" onclick="switchConf('oeste', this)" id="oesteTab">Oeste</div>
+      </div>
+      <div class="glass-section table-wrap">
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>Time</th><th>V</th><th>D</th><th>%</th></tr></thead>
+          <tbody id="nbaLesteBody"><tr><td colspan="5"><div class="loading-state"><div class="loading-spinner"></div></div></td></tr></tbody>
+          <tbody id="nbaOesteBody" style="display:none"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── VIEW: UFC ── -->
+    <section class="view" id="view-ufc">
+      <div class="sport-banner ufc">
+        <span class="banner-icon">🥊</span>
+        <div>
+          <div class="banner-title" style="background:linear-gradient(135deg,#fff,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">UFC / MMA</div>
+          <div class="banner-sub">Calendário de eventos</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h2>Próximo Evento</h2>
+        <span class="pill">Ao vivo</span>
+      </div>
+      <div id="ufcProximoMobile"><div class="loading-state"><div class="loading-spinner"></div></div></div>
+
+      <div class="section-head">
+        <h2>Calendário 2026</h2>
+      </div>
+      <div id="ufcCalendarioMobile"><div class="loading-state"><div class="loading-spinner"></div></div></div>
+    </section>
+
+    <!-- ── VIEW: ARTILHARIA ── -->
+    <section class="view" id="view-artilharia">
+      <div class="section-head">
+        <h2>Artilharia</h2>
+        <span class="pill">Brasileirão</span>
+      </div>
+      <div id="artilhariaMobile"><div class="loading-state"><div class="loading-spinner"></div></div></div>
+    </section>
+
+    <!-- ── VIEW: TIMES ── -->
+    <section class="view" id="view-times">
+      <div class="section-head">
+        <h2>Times</h2>
+        <span class="pill">Série A</span>
+      </div>
+      <input class="search-box" id="teamSearchMobile" placeholder="🔍 Buscar time..." oninput="filterTeams(this.value)" />
+      <div class="teams-grid" id="timesGridMobile"></div>
+    </section>
+
+  </main>
+
+  <!-- ════════════ BOTTOM NAV ════════════ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegação principal">
+    <div class="bottom-nav-inner">
+      <div class="nav-item active" data-tab="home" onclick="switchTab('home')" role="button" tabindex="0" aria-label="Início">
+        <span class="nav-item-icon">🏠</span>
+        <span class="nav-item-label">Início</span>
+      </div>
+      <div class="nav-item" data-tab="brasileirao" onclick="switchTab('brasileirao')" role="button" tabindex="0" aria-label="Brasileirão">
+        <span class="nav-item-icon">🏆</span>
+        <span class="nav-item-label">Série A</span>
+      </div>
+      <div class="nav-item" data-tab="nba" onclick="switchTab('nba')" role="button" tabindex="0" aria-label="NBA">
+        <span class="nav-item-icon">🏀</span>
+        <span class="nav-item-label">NBA</span>
+      </div>
+      <div class="nav-item" data-tab="ufc" onclick="switchTab('ufc')" role="button" tabindex="0" aria-label="UFC">
+        <span class="nav-item-icon">🥊</span>
+        <span class="nav-item-label">UFC</span>
+      </div>
+      <div class="nav-item" data-tab="times" onclick="switchTab('times')" role="button" tabindex="0" aria-label="Times">
+        <span class="nav-item-icon">🎽</span>
+        <span class="nav-item-label">Times</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ════════════ TEAM DRAWER ════════════ -->
+  <div class="drawer" id="teamDrawer">
+    <div class="drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="drawer-sheet">
+      <div class="drawer-handle"></div>
+      <div class="drawer-content" id="drawerContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── CONFIG ─────────────────────────────────────────────────
+    const BASE = window.location.origin + '/api'
+    let allTeams = []
+    let nbaStandings = { leste: [], oeste: [] }
+    let currentConf = 'leste'
+
+    // ─── INIT ────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      setupGreeting()
+      setupPullToRefresh()
+      loadHome()
+    })
+
+    // ─── NAV ─────────────────────────────────────────────────────
+    function switchTab(tab) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+      document.getElementById('view-' + tab)?.classList.add('active')
+      document.querySelector(`.nav-item[data-tab="${tab}"]`)?.classList.add('active')
+
+      if (tab === 'brasileirao' && !document.getElementById('standingsBodyMobile').children[0]?.classList.contains('loading-state')) return
+      if (tab === 'brasileirao') loadStandings()
+      if (tab === 'nba') loadNBA()
+      if (tab === 'ufc') loadUFC()
+      if (tab === 'artilharia') loadArtilharia()
+      if (tab === 'times') loadTimes()
+
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    // ─── GREETING ────────────────────────────────────────────────
+    function setupGreeting() {
+      const now = new Date()
+      const h = now.getHours()
+      const greeting = h < 12 ? 'Bom dia! ☀️' : h < 18 ? 'Boa tarde! 🌤' : 'Boa noite! 🌙'
+      document.getElementById('greetingText').textContent = greeting
+      const opts = { weekday: 'long', day: 'numeric', month: 'long' }
+      document.getElementById('greetingDate').textContent =
+        now.toLocaleDateString('pt-BR', opts).replace(/^\w/, c => c.toUpperCase())
+      const today = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      document.getElementById('todayDateLabel').textContent = today
+      document.getElementById('nbaTodayLabel').textContent = today
+    }
+
+    // ─── FETCH HELPER ────────────────────────────────────────────
+    async function apiFetch(path) {
+      const r = await fetch(BASE + path)
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.json()
+    }
+
+    // ─── TOAST ───────────────────────────────────────────────────
+    function showToast(msg, duration = 2200) {
+      const t = document.getElementById('toast')
+      t.textContent = msg
+      t.classList.add('show')
+      setTimeout(() => t.classList.remove('show'), duration)
+    }
+
+    // ─── PULL TO REFRESH ─────────────────────────────────────────
+    function setupPullToRefresh() {
+      let startY = 0, pulling = false
+      const indicator = document.getElementById('ptrIndicator')
+
+      document.addEventListener('touchstart', e => {
+        if (window.scrollY === 0) startY = e.touches[0].clientY
+      }, { passive: true })
+
+      document.addEventListener('touchmove', e => {
+        if (!startY) return
+        const dy = e.touches[0].clientY - startY
+        if (dy > 60 && window.scrollY === 0) {
+          pulling = true
+          indicator.classList.add('visible')
+        }
+      }, { passive: true })
+
+      document.addEventListener('touchend', () => {
+        if (pulling) {
+          pulling = false
+          startY = 0
+          loadHome()
+          setTimeout(() => indicator.classList.remove('visible'), 1200)
+        }
+        startY = 0
+      })
+    }
+
+    // ─── HOME ────────────────────────────────────────────────────
+    async function loadHome() {
+      try {
+        const [jogos, teams, ufcData, nbaData] = await Promise.allSettled([
+          apiFetch('/agenda/hoje'),
+          apiFetch('/times'),
+          apiFetch('/ufc/calendario'),
+          apiFetch('/nba/games/today'),
+        ])
+
+        // Metrics
+        const timesVal = teams.status === 'fulfilled' ? teams.value.total || teams.value.data?.length || '—' : '—'
+        const todayVal = jogos.status === 'fulfilled' ? jogos.value.total || jogos.value.data?.length || 0 : 0
+        const ufcVal = ufcData.status === 'fulfilled' ? ufcData.value.total || ufcData.value.data?.length || 0 : 0
+        const nbaVal = nbaData.status === 'fulfilled' ? nbaData.value.total || nbaData.value.data?.length || 0 : 0
+
+        document.getElementById('m-teams').textContent = timesVal
+        document.getElementById('m-today').textContent = todayVal
+        document.getElementById('m-ufc').textContent = ufcVal ? ufcVal : '—'
+        document.getElementById('m-nba').textContent = nbaVal
+
+        // Today's matches
+        const todayMatches = jogos.status === 'fulfilled'
+          ? (jogos.value.data || []).slice(0, 8) : []
+        const todayEl = document.getElementById('todayMatchesMobile')
+        if (todayMatches.length) {
+          todayEl.innerHTML = todayMatches.map(renderMatchCard).join('')
+        } else {
+          todayEl.innerHTML = '<div class="empty-state">😴 Nenhum jogo hoje</div>'
+        }
+
+        // Upcoming (next 7d)
+        const upcoming = await apiFetch('/agenda/proximos').catch(() => ({ data: [] }))
+        const upEl = document.getElementById('upcomingMatchesMobile')
+        const upList = (upcoming.data || []).slice(0, 6)
+        upEl.innerHTML = upList.length ? upList.map(renderMatchCard).join('') : '<div class="empty-state">📅 Sem jogos próximos</div>'
+
+      } catch (e) {
+        console.error(e)
+        document.getElementById('todayMatchesMobile').innerHTML = '<div class="empty-state">⚠️ Erro ao carregar</div>'
+      }
+    }
+
+    function renderMatchCard(m) {
+      const isLive = m.status === 'ao_vivo'
+      const isFinished = m.status === 'encerrado'
+      const badge = isLive
+        ? '<span class="badge live">● Ao vivo</span>'
+        : isFinished
+        ? '<span class="badge finished">Encerrado</span>'
+        : `<span class="badge upcoming">${m.horario || '--:--'}</span>`
+
+      const placar = isLive || isFinished
+        ? `<span class="match-score">${m.golsA ?? 0} – ${m.golsB ?? 0}</span><div class="match-time">${isLive ? '🟢 Ao vivo' : 'Final'}</div>`
+        : `<span class="match-vs">vs</span><span class="match-time-big">${m.horario || '—'}</span>`
+
+      const logoA = m.escudoA || m.logoA
+        ? `<img src="${m.escudoA || m.logoA}" alt="${m.timeA}" onerror="this.parentElement.textContent='⚽'" />`
+        : '⚽'
+      const logoB = m.escudoB || m.logoB
+        ? `<img src="${m.escudoB || m.logoB}" alt="${m.timeB}" onerror="this.parentElement.textContent='⚽'" />`
+        : '⚽'
+
+      return `<div class="match-card">
+        <div class="match-comp">
+          <span>${m.campeonato || m.competition || 'Futebol'}</span>
+          ${badge}
+        </div>
+        <div class="match-body">
+          <div class="match-team">
+            <div class="team-logo">${logoA}</div>
+            <div class="team-name">${m.timeA || m.homeTeam || '—'}</div>
+          </div>
+          <div class="match-center">${placar}</div>
+          <div class="match-team">
+            <div class="team-logo">${logoB}</div>
+            <div class="team-name">${m.timeB || m.awayTeam || '—'}</div>
+          </div>
+        </div>
+      </div>`
+    }
+
+    // ─── STANDINGS ───────────────────────────────────────────────
+    async function loadStandings() {
+      const tbody = document.getElementById('standingsBodyMobile')
+      tbody.innerHTML = '<tr><td colspan="7"><div class="loading-state"><div class="loading-spinner"></div></div></td></tr>'
+      try {
+        const data = await apiFetch('/tabela')
+        const rows = data.data || data.tabela || []
+        tbody.innerHTML = rows.map((t, i) => {
+          const pos = i + 1
+          const posCls = pos === 1 ? 'pos-1' : pos === 2 ? 'pos-2' : pos === 3 ? 'pos-3' : pos <= 6 ? 'pos-g4' : pos >= 17 ? 'pos-rel' : 'pos-norm'
+          const logoHtml = t.escudo
+            ? `<img src="${t.escudo}" alt="${t.nome}" class="team-mini-logo" onerror="this.style.display='none'" />`
+            : '⚽'
+          return `<tr>
+            <td><span class="pos-badge ${posCls}">${pos}</span></td>
+            <td><div class="inline-team">${logoHtml}<span>${t.nomeAbreviado || t.nome || '—'}</span></div></td>
+            <td><strong>${t.pontos ?? '—'}</strong></td>
+            <td>${t.jogos ?? '—'}</td>
+            <td>${t.vitorias ?? '—'}</td>
+            <td>${t.derrotas ?? '—'}</td>
+            <td>${t.saldoGols != null ? (t.saldoGols > 0 ? '+' : '') + t.saldoGols : '—'}</td>
+          </tr>`
+        }).join('')
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">⚠️ Erro ao carregar tabela</td></tr>'
+      }
+    }
+
+    // ─── NBA ─────────────────────────────────────────────────────
+    async function loadNBA() {
+      const todayEl = document.getElementById('nbaTodayMobile')
+      todayEl.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>'
+      try {
+        const [today, standings] = await Promise.allSettled([
+          apiFetch('/nba/games/today'),
+          apiFetch('/nba/standings'),
+        ])
+
+        // Today games
+        const games = today.status === 'fulfilled' ? today.value.data || [] : []
+        if (games.length) {
+          todayEl.innerHTML = games.map(g => {
+            const isLive = g.status === 'live'
+            const isEnd = g.status === 'finished'
+            const badge = isLive
+              ? '<span class="badge live">● Ao vivo</span>'
+              : isEnd ? '<span class="badge finished">Final</span>'
+              : `<span class="badge nba-badge">${g.time || '--:--'}</span>`
+
+            return `<div class="nba-game-card">
+              <div class="match-comp" style="color:var(--orange)">
+                <span>NBA Basketball</span>${badge}
+              </div>
+              <div class="nba-score-row">
+                <div class="nba-team-score">
+                  <div class="nba-abbr">${g.homeTeam?.abbreviation || g.home?.abbr || '—'}</div>
+                  ${isLive || isEnd ? `<div class="nba-pts">${g.homeScore || g.home?.score || 0}</div>` : ''}
+                </div>
+                <div class="nba-sep">${isLive || isEnd ? '-' : 'vs'}</div>
+                <div class="nba-team-score">
+                  <div class="nba-abbr">${g.awayTeam?.abbreviation || g.away?.abbr || '—'}</div>
+                  ${isLive || isEnd ? `<div class="nba-pts">${g.awayScore || g.away?.score || 0}</div>` : ''}
+                </div>
+              </div>
+            </div>`
+          }).join('')
+        } else {
+          todayEl.innerHTML = '<div class="empty-state">😴 Sem jogos NBA hoje</div>'
+        }
+
+        // Standings
+        if (standings.status === 'fulfilled') {
+          const sd = standings.value.data || {}
+          nbaStandings.leste = sd.leste || []
+          nbaStandings.oeste = sd.oeste || []
+          renderNBAConf('leste')
+          renderNBAConf('oeste')
+        }
+      } catch (e) {
+        todayEl.innerHTML = '<div class="empty-state">⚠️ Erro ao carregar NBA</div>'
+      }
+    }
+
+    function renderNBAConf(conf) {
+      const tbodyId = conf === 'leste' ? 'nbaLesteBody' : 'nbaOesteBody'
+      const data = nbaStandings[conf]
+      const tbody = document.getElementById(tbodyId)
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">— Sem dados —</td></tr>'
+        return
+      }
+      tbody.innerHTML = data.map((t, i) => {
+        const pos = i + 1
+        const pct = t.winPct || t.aproveitamento || ((t.vitorias / Math.max((t.vitorias + t.derrotas), 1)) * 100).toFixed(0)
+        const logo = t.escudo || t.logo ? `<img src="${t.escudo || t.logo}" class="team-mini-logo" onerror="this.style.display='none'"/>` : '🏀'
+        return `<tr>
+          <td><span class="pos-badge ${pos <= 6 ? 'pos-g4' : 'pos-norm'}">${pos}</span></td>
+          <td><div class="inline-team">${logo} ${t.time || t.nome || '—'}</div></td>
+          <td><strong>${t.vitorias ?? '—'}</strong></td>
+          <td>${t.derrotas ?? '—'}</td>
+          <td>${typeof pct === 'number' ? (pct < 1 ? (pct * 100).toFixed(0) + '%' : pct + '%') : pct}</td>
+        </tr>`
+      }).join('')
+    }
+
+    function switchConf(conf, el) {
+      currentConf = conf
+      document.querySelectorAll('.conf-tab').forEach(t => t.classList.remove('active'))
+      el.classList.add('active')
+      const lesteBody = document.getElementById('nbaLesteBody')
+      const oesteBody = document.getElementById('nbaOesteBody')
+      lesteBody.style.display = conf === 'leste' ? '' : 'none'
+      oesteBody.style.display = conf === 'oeste' ? '' : 'none'
+    }
+
+    // ─── UFC ─────────────────────────────────────────────────────
+    async function loadUFC() {
+      const proximo = document.getElementById('ufcProximoMobile')
+      const calendario = document.getElementById('ufcCalendarioMobile')
+      proximo.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>'
+      calendario.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>'
+      try {
+        const [prox, cal] = await Promise.allSettled([
+          apiFetch('/ufc/enriquecido').catch(() => apiFetch('/ufc/proximo')),
+          apiFetch('/ufc/calendario'),
+        ])
+
+        // Próximo evento
+        const ev = prox.status === 'fulfilled' ? (prox.value.data || prox.value) : null
+        if (ev && ev.nome) {
+          const img = ev.imagemEvento ? `<img src="${ev.imagemEvento}" class="ufc-event-img" onerror="this.style.display='none'" alt="${ev.nome}" />` : ''
+          const mainFight = ev.lutaPrincipal
+          let fightHtml = ''
+          if (mainFight) {
+            const f1 = mainFight.lutador1
+            const f2 = mainFight.lutador2
+            const photoA = f1.foto ? `<img src="${f1.foto}" class="ufc-fighter-photo" onerror="this.outerHTML='🥊'" alt="${f1.nome}"/>` : '🥊'
+            const photoB = f2.foto ? `<img src="${f2.foto}" class="ufc-fighter-photo" onerror="this.outerHTML='🥊'" alt="${f2.nome}"/>` : '🥊'
+            fightHtml = `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--red);font-weight:700;margin-bottom:10px">Main Event — ${mainFight.categoria || ''}</div>
+              <div class="ufc-fight-row">
+                <div class="ufc-fighter-mini">${photoA}<div class="ufc-fighter-name">${f1.nome}</div><div class="ufc-fighter-record">${f1.cartel || ''}</div></div>
+                <div style="text-align:center"><div class="ufc-vs-center">VS</div><div class="ufc-weight">${mainFight.rounds || 5} rounds</div></div>
+                <div class="ufc-fighter-mini">${photoB}<div class="ufc-fighter-name">${f2.nome}</div><div class="ufc-fighter-record">${f2.cartel || ''}</div></div>
+              </div>
+            </div>`
+          }
+          proximo.innerHTML = `<div class="ufc-event-card">${img}
+            <div class="ufc-event-date">📅 ${formatDate(ev.data)} • ${ev.horario || '--:--'}</div>
+            <div class="ufc-event-name">${ev.nome}</div>
+            ${ev.local ? `<div style="font-size:12px;color:var(--muted);margin-top:2px">📍 ${ev.local}${ev.cidade ? ', ' + ev.cidade : ''}</div>` : ''}
+            ${fightHtml}
+          </div>`
+        } else {
+          proximo.innerHTML = '<div class="empty-state">Sem evento programado</div>'
+        }
+
+        // Calendário
+        const events = cal.status === 'fulfilled' ? (cal.value.data || []).slice(0, 12) : []
+        if (events.length) {
+          calendario.innerHTML = events.map(e => `
+            <div class="ufc-event-card" style="padding:12px 14px;margin-bottom:8px">
+              <div class="ufc-event-date">${formatDate(e.data)}</div>
+              <div class="ufc-event-name" style="font-size:14px">${e.nome}</div>
+              ${e.local ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📍 ${e.local}</div>` : ''}
+              ${e.transmissoes?.length ? `<div style="font-size:11px;color:var(--purple-light);margin-top:4px">📺 ${e.transmissoes.map(t => t.canal || t).join(' · ')}</div>` : ''}
+            </div>`).join('')
+        } else {
+          calendario.innerHTML = '<div class="empty-state">📅 Calendário indisponível</div>'
+        }
+      } catch (e) {
+        proximo.innerHTML = '<div class="empty-state">⚠️ Erro ao carregar UFC</div>'
+        calendario.innerHTML = ''
+      }
+    }
+
+    // ─── ARTILHARIA ──────────────────────────────────────────────
+    async function loadArtilharia() {
+      const el = document.getElementById('artilhariaMobile')
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>'
+      try {
+        const data = await apiFetch('/artilharia')
+        const list = data.data || data.artilheiros || []
+        if (!list.length) { el.innerHTML = '<div class="empty-state">Sem dados</div>'; return }
+        el.innerHTML = list.slice(0, 20).map((p, i) => {
+          const pos = i + 1
+          const posCls = pos === 1 ? 'pos-1' : pos === 2 ? 'pos-2' : pos === 3 ? 'pos-3' : 'pos-norm'
+          const photo = p.foto
+            ? `<img src="${p.foto}" class="scorer-photo" onerror="this.outerHTML='<div class=scorer-photo style=display:grid;place-items:center>⚽</div>'" />`
+            : '<div class="scorer-photo" style="display:grid;place-items:center;font-size:18px">⚽</div>'
+          return `<div class="scorer-row">
+            <span class="scorer-rank ${posCls}">${pos}</span>
+            ${photo}
+            <div class="scorer-info">
+              <div class="scorer-name">${p.jogador || p.nome || '—'}</div>
+              <div class="scorer-team">${p.time || p.clube || '—'}</div>
+            </div>
+            <div class="scorer-goals">${p.gols ?? p.goals ?? '—'}</div>
+          </div>`
+        }).join('')
+      } catch (e) {
+        el.innerHTML = '<div class="empty-state">⚠️ Erro ao carregar artilharia</div>'
+      }
+    }
+
+    // ─── TIMES ───────────────────────────────────────────────────
+    async function loadTimes() {
+      const grid = document.getElementById('timesGridMobile')
+      grid.innerHTML = '<div class="loading-state" style="grid-column:1/-1"><div class="loading-spinner"></div></div>'
+      try {
+        const data = await apiFetch('/times')
+        allTeams = data.data || data.times || []
+        renderTeamsGrid(allTeams)
+      } catch (e) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">⚠️ Erro</div>'
+      }
+    }
+
+    function renderTeamsGrid(teams) {
+      const grid = document.getElementById('timesGridMobile')
+      if (!teams.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Nenhum time encontrado</div>'; return }
+      grid.innerHTML = teams.map(t => {
+        const logo = t.escudo || t.logo
+          ? `<img src="${t.escudo || t.logo}" alt="${t.nome}" onerror="this.outerHTML='<span style=font-size:22px>⚽</span>'" />`
+          : '<span style="font-size:22px">⚽</span>'
+        return `<div class="team-card" onclick="openTeam('${t.id || t.slug || encodeURIComponent(t.nome)}', '${escHtml(t.nome)}')">
+          <div class="team-card-logo">${logo}</div>
+          <div class="team-card-name">${t.nomeAbreviado || t.nome || '—'}</div>
+        </div>`
+      }).join('')
+    }
+
+    function filterTeams(q) {
+      const filtered = q
+        ? allTeams.filter(t => (t.nome + (t.nomeAbreviado || '')).toLowerCase().includes(q.toLowerCase()))
+        : allTeams
+      renderTeamsGrid(filtered)
+    }
+
+    // ─── TEAM DRAWER ─────────────────────────────────────────────
+    async function openTeam(id, name) {
+      const drawer = document.getElementById('teamDrawer')
+      const content = document.getElementById('drawerContent')
+      content.innerHTML = '<div class="loading-state" style="min-height:200px"><div class="loading-spinner"></div><span>Carregando ' + name + '...</span></div>'
+      drawer.classList.add('open')
+      document.body.style.overflow = 'hidden'
+      try {
+        const [team, elenco] = await Promise.allSettled([
+          apiFetch('/times/' + id),
+          apiFetch('/times/' + id + '/elenco'),
+        ])
+        const t = team.status === 'fulfilled' ? team.value.data || {} : {}
+        const squad = elenco.status === 'fulfilled' ? elenco.value.data || elenco.value.jogadores || [] : []
+
+        const logo = t.escudo || t.logo
+          ? `<img src="${t.escudo || t.logo}" alt="${t.nome || name}" style="width:85%;height:85%;object-fit:contain" onerror="this.outerHTML='<span style=font-size:36px>⚽</span>'" />`
+          : '<span style="font-size:36px">⚽</span>'
+
+        content.innerHTML = `
+          <div class="team-hero-mobile">
+            <div class="team-hero-logo-mobile">${logo}</div>
+            <div>
+              <div class="team-hero-name-mobile">${t.nome || name}</div>
+              <div class="team-hero-meta-mobile">${t.estado || t.cidade || ''} ${t.fundacao ? '· Fundado em ' + t.fundacao : ''}</div>
+            </div>
+          </div>
+          <div class="team-stats-row">
+            <div class="team-stat-box"><div class="team-stat-val">${t.pontos ?? '—'}</div><div class="team-stat-lbl">Pontos</div></div>
+            <div class="team-stat-box"><div class="team-stat-val">${t.posicao ? t.posicao + 'º' : '—'}</div><div class="team-stat-lbl">Posição</div></div>
+            <div class="team-stat-box"><div class="team-stat-val">${t.vitorias ?? '—'}</div><div class="team-stat-lbl">Vitórias</div></div>
+            <div class="team-stat-box"><div class="team-stat-val">${t.empates ?? '—'}</div><div class="team-stat-lbl">Empates</div></div>
+            <div class="team-stat-box"><div class="team-stat-val">${t.derrotas ?? '—'}</div><div class="team-stat-lbl">Derrotas</div></div>
+            <div class="team-stat-box"><div class="team-stat-val">${t.gols ?? '—'}</div><div class="team-stat-lbl">Gols</div></div>
+          </div>
+          ${squad.length ? `<div style="font-size:14px;font-weight:800;margin-bottom:10px">Elenco (${squad.length})</div>
+          <div class="squad-grid">${squad.slice(0, 24).map(p => {
+            const photo = p.foto ? `<img src="${p.foto}" onerror="this.outerHTML='⚽'" />` : '⚽'
+            return `<div class="squad-player">
+              <div class="squad-avatar">${photo}</div>
+              <div><div class="squad-player-name">${p.nome || '—'}</div><div class="squad-player-pos">${p.posicao || '—'}</div></div>
+            </div>`
+          }).join('')}</div>` : '<div class="empty-state">Elenco não disponível</div>'}
+        `
+      } catch (e) {
+        content.innerHTML = `<div class="empty-state">⚠️ Erro ao carregar ${name}</div>`
+      }
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('teamDrawer')
+      drawer.classList.remove('open')
+      document.body.style.overflow = ''
+    }
+
+    // ─── UTILS ───────────────────────────────────────────────────
+    function formatDate(dateStr) {
+      if (!dateStr) return '—'
+      try {
+        const d = new Date(dateStr + 'T12:00:00')
+        return d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }).replace('.', '')
+      } catch { return dateStr }
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
+    }
+
+    // Keyboard nav for drawer
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeDrawer()
+    })
+
+    // Swipe down to close drawer
+    let drawerStartY = 0
+    const sheet = document.querySelector('.drawer-sheet')
+    sheet.addEventListener('touchstart', e => { drawerStartY = e.touches[0].clientY }, { passive: true })
+    sheet.addEventListener('touchend', e => {
+      const dy = e.changedTouches[0].clientY - drawerStartY
+      if (dy > 80) closeDrawer()
+    }, { passive: true })
+  </script>
+</body>
+</html>
